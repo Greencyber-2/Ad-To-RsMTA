@@ -18,6 +18,9 @@
         .logo-badge {
             background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
             box-shadow: 0 2px 10px rgba(124, 58, 237, 0.5);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
         
         .ad-card {
@@ -127,38 +130,63 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        /* استایل‌های جدید برای هدر */
+        .header-content {
+            position: relative;
+            height: 60px;
+        }
+
+        .mobile-search-container {
+            transition: all 0.3s ease;
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .mobile-search-container.show {
+            max-height: 100px;
+            padding-top: 10px;
+        }
+
+        /* استایل برای آگهی‌های فیلتر شده */
+        .ad-card.hidden {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .logo-badge {
+                position: static;
+                transform: none;
+                margin: 0 auto;
+            }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
     <!-- هدر -->
     <header class="fixed top-0 left-0 right-0 z-30 header-container">
-        <div class="container mx-auto px-4 py-3">
-            <div class="flex items-center justify-between">
-                <!-- بخش سمت راست - لوگو و منو -->
-                <div class="flex items-center">
-                    <!-- دکمه منوی همبرگری -->
-                    <button id="hamburger-btn" class="md:hidden p-2 rounded-full hover:bg-gray-700 transition mr-3 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <i class="fas fa-bars text-white text-xl"></i>
-                    </button>
-                    
-                    <!-- لوگو و عنوان -->
-                    <div class="flex items-center">
-                        <div class="logo-badge text-white px-3 py-1 rounded-md font-bold flex items-center">
-                            <span class="ml-1">راکستار</span>
-                            <span class="text-xs bg-white text-purple-600 px-1 rounded mr-1">MTA</span>
-                        </div>
+        <div class="container mx-auto px-4">
+            <div class="header-content flex items-center justify-between">
+                <!-- دکمه منوی همبرگری -->
+                <button id="hamburger-btn" class="md:hidden p-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <i class="fas fa-bars text-white text-xl"></i>
+                </button>
+                
+                <!-- لوگو و عنوان - در وسط -->
+                <div class="flex items-center justify-center flex-grow md:flex-grow-0">
+                    <div class="logo-badge text-white px-3 py-1 rounded-md font-bold flex items-center">
+                        <span class="ml-1">راکستار</span>
+                        <span class="text-xs bg-white text-purple-600 px-1 rounded mr-1">MTA</span>
                     </div>
                 </div>
                 
-                <!-- بخش وسط - جستجوی دسکتاپ -->
-                <div class="flex-1 mx-4 hidden md:block">
-                    <div class="relative max-w-xl mx-auto">
-                        <div class="relative">
-                            <input type="text" id="search-input" class="w-full py-2 px-4 pr-10 rounded-full bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400" placeholder="جستجوی آگهی...">
-                            <button id="search-btn" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
+                <!-- بخش جستجوی دسکتاپ -->
+                <div class="hidden md:flex items-center flex-1 max-w-xl mx-4">
+                    <div class="relative w-full">
+                        <input type="text" id="search-input" class="w-full py-2 px-4 pr-10 rounded-full bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400" placeholder="جستجوی آگهی...">
+                        <button id="search-btn" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
                 </div>
                 
@@ -171,8 +199,8 @@
             </div>
             
             <!-- جستجوی موبایل -->
-            <div id="mobile-search-container" class="mt-3 hidden">
-                <div class="relative">
+            <div id="mobile-search-container" class="mobile-search-container">
+                <div class="relative pb-3">
                     <input type="text" id="mobile-search-input" class="w-full py-2 px-4 pr-10 rounded-full bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400" placeholder="جستجوی آگهی...">
                     <button id="mobile-search-submit" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
                         <i class="fas fa-search"></i>
@@ -263,6 +291,45 @@
         </div>
         <div id="ads-list" class="bg-gray-800 rounded-lg overflow-hidden">
             <!-- آگهی‌ها اینجا نمایش داده می‌شوند -->
+            <div class="ad-card p-4 hover:bg-gray-700 transition cursor-pointer">
+                <div class="flex gap-4">
+                    <img src="https://via.placeholder.com/100" alt="آگهی" class="ad-image">
+                    <div class="flex-1">
+                        <h3 class="ad-title font-bold">پژو 206 تیپ 2 مدل 1395</h3>
+                        <p class="ad-price mt-1">120,000,000 تومان</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="ad-location">تهران، تجریش</span>
+                            <span class="ad-time">2 ساعت پیش</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ad-card p-4 hover:bg-gray-700 transition cursor-pointer">
+                <div class="flex gap-4">
+                    <img src="https://via.placeholder.com/100" alt="آگهی" class="ad-image">
+                    <div class="flex-1">
+                        <h3 class="ad-title font-bold">آپارتمان 80 متری در نیاوران</h3>
+                        <p class="ad-price mt-1">3,500,000,000 تومان</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="ad-location">تهران، نیاوران</span>
+                            <span class="ad-time">1 روز پیش</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ad-card p-4 hover:bg-gray-700 transition cursor-pointer">
+                <div class="flex gap-4">
+                    <img src="https://via.placeholder.com/100" alt="آگهی" class="ad-image">
+                    <div class="flex-1">
+                        <h3 class="ad-title font-bold">لپ تاپ ایسوس مدل VivoBook</h3>
+                        <p class="ad-price mt-1">15,000,000 تومان</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="ad-location">اصفهان</span>
+                            <span class="ad-time">3 ساعت پیش</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -291,5 +358,83 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        // اسکریپت برای مدیریت منوی موبایل و جستجو
+        $(document).ready(function() {
+            // مدیریت منوی موبایل
+            $('#hamburger-btn').click(function() {
+                $('#mobile-menu').addClass('show');
+                $('#mobile-menu-overlay').addClass('show');
+            });
+            
+            $('#close-mobile-menu, #mobile-menu-overlay').click(function() {
+                $('#mobile-menu').removeClass('show');
+                $('#mobile-menu-overlay').removeClass('show');
+            });
+            
+            // مدیریت جستجوی موبایل
+            $('#mobile-search-btn').click(function() {
+                $('#mobile-search-container').toggleClass('show');
+                $('#mobile-search-input').focus();
+            });
+            
+            // تابع جستجوی مشترک برای موبایل و دسکتاپ
+            function performSearch(searchTerm) {
+                searchTerm = searchTerm.toLowerCase().trim();
+                
+                if (searchTerm === '') {
+                    $('.ad-card').removeClass('hidden');
+                    return;
+                }
+                
+                $('.ad-card').each(function() {
+                    const cardText = $(this).text().toLowerCase();
+                    if (cardText.includes(searchTerm)) {
+                        $(this).removeClass('hidden');
+                    } else {
+                        $(this).addClass('hidden');
+                    }
+                });
+            }
+            
+            // جستجوی دسکتاپ
+            $('#search-btn').click(function() {
+                const searchTerm = $('#search-input').val();
+                performSearch(searchTerm);
+            });
+            
+            $('#search-input').keypress(function(e) {
+                if (e.which === 13) { // Enter key
+                    const searchTerm = $('#search-input').val();
+                    performSearch(searchTerm);
+                }
+            });
+            
+            // جستجوی موبایل
+            $('#mobile-search-submit').click(function() {
+                const searchTerm = $('#mobile-search-input').val();
+                performSearch(searchTerm);
+                $('#mobile-search-container').removeClass('show');
+            });
+            
+            $('#mobile-search-input').keypress(function(e) {
+                if (e.which === 13) { // Enter key
+                    const searchTerm = $('#mobile-search-input').val();
+                    performSearch(searchTerm);
+                    $('#mobile-search-container').removeClass('show');
+                }
+            });
+            
+            // بستن جستجوی موبایل هنگام اسکرول
+            $(window).scroll(function() {
+                if ($(window).scrollTop() > 10) {
+                    $('#mobile-search-container').removeClass('show');
+                }
+            });
+            
+            // نمونه آگهی‌ها برای نمایش عملکرد جستجو
+            // در حالت واقعی این آگهی‌ها از سرور دریافت می‌شوند
+        });
+    </script>
 </body>
 </html>
