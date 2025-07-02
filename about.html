@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>درباره ما - راکستار ام تی ای</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* استایل‌های سفارشی */
+        .header-container {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo-badge {
+            background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+            box-shadow: 0 2px 10px rgba(124, 58, 237, 0.5);
+        }
+        
+        .about-card {
+            transition: all 0.3s ease;
+            border: 1px solid #4b5563;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid #4b5563;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .footer-tab {
+            position: relative;
+            padding: 12px 0;
+            flex: 1;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        
+        /* استایل‌های منوی همبرگری */
+        #mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+        }
+        
+        #mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background-color: #1f2937;
+            z-index: 50;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        #mobile-menu.show {
+            right: 0;
+        }
+        
+        #mobile-menu-overlay.show {
+            display: block;
+        }
+        
+        /* انیمیشن‌ها */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        
+        /* استایل‌های تماس */
+        .contact-item {
+            transition: all 0.3s ease;
+        }
+        
+        .contact-item:hover {
+            background-color: rgba(124, 58, 237, 0.1);
+        }
+        
+        /* استایل‌های جدید */
+        .logo-container {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .mobile-menu-item {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 12px 16px;
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .logo-container {
+                position: static;
+                transform: none;
+                margin-right: auto;
+                margin-left: auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
+    <!-- هدر -->
+    <header class="fixed top-0 left-0 right-0 z-30 header-container">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between relative">
+                <!-- دکمه منوی همبرگری -->
+                <button id="hamburger-btn" class="md:hidden p-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <i class="fas fa-bars text-white text-xl"></i>
+                </button>
+                
+                <!-- لوگو و عنوان - مرکز -->
+                <div class="logo-container">
+                    <div class="logo-badge text-white px-3 py-1 rounded-md font-bold flex items-center">
+                        <span class="ml-1">راکستار</span>
+                        <span class="text-xs bg-white text-purple-600 px-1 rounded mr-1">MTA</span>
+                    </div>
+                </div>
+                
+                <!-- فضای خالی برای بالانس لایوت -->
+                <div class="md:hidden w-10"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- منوی موبایل -->
+    <div id="mobile-menu-overlay"></div>
+    <div id="mobile-menu">
+        <div class="h-full flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b border-gray-700">
+                <h3 class="text-lg font-bold text-white">منو</h3>
+                <button id="close-mobile-menu" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto">
+                <div class="space-y-1 p-2">
+                    <a href="index.html" class="mobile-menu-item text-white hover:bg-gray-700 rounded-lg">
+                        <span class="ml-2">آگهی‌ها</span>
+                        <i class="fas fa-th-list"></i>
+                    </a>
+                    <a href="submit-ad.html" class="mobile-menu-item text-white hover:bg-gray-700 rounded-lg">
+                        <span class="ml-2">ثبت آگهی</span>
+                        <i class="fas fa-plus"></i>
+                    </a>
+                    <a href="about.html" class="mobile-menu-item bg-gray-700 text-white rounded-lg">
+                        <span class="ml-2">درباره ما</span>
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- محتوای اصلی -->
+    <main class="container mx-auto pt-24 pb-24 min-h-[calc(100vh-10rem)] px-4">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-2xl md:text-3xl font-bold text-center mb-8 text-white">درباره راکستار ام تی ای</h1>
+            
+            <!-- بخش معرفی -->
+            <div class="about-card rounded-lg p-6 mb-8 animate-fade-in">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:ml-6 mb-4 md:mb-0">
+                        <img src="rsmta.png" alt="لوگوی راکستار ام تی ای" class="w-24 h-24 rounded-full border-2 border-purple-500 object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-300 leading-relaxed text-justify">
+                            سرور راک استار ام تی ای در سال ۱۴۰۰ توسط تیم برنامه نویسی و توسعه ی راک استار، تاسیس و در دسترس قرار گرفت. این سرور به عنوان اولین و تنها سرور بهینه و اختصاصی ایرانی می‌باشد که همواره در این تلاش است تا محیطی گرم و صمیمی را همراه با کیفیت بالا برای بازیکنان فراهم کند.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ویژگی‌های سرور -->
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-6 mt-12 text-center animate-fade-in" style="animation-delay: 0.1s">ویژگی‌های سرور ما</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                <div class="feature-card rounded-lg p-6 animate-fade-in" style="animation-delay: 0.2s">
+                    <div class="text-purple-400 text-3xl mb-4">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">پینگ پایین و پایدار</h3>
+                    <p class="text-gray-300 text-sm">
+                        با استفاده از سرورهای اختصاصی در ایران، کمترین میزان پینگ و بیشترین پایداری را تجربه خواهید کرد.
+                    </p>
+                </div>
+                
+                <div class="feature-card rounded-lg p-6 animate-fade-in" style="animation-delay: 0.3s">
+                    <div class="text-purple-400 text-3xl mb-4">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">امنیت بالا</h3>
+                    <p class="text-gray-300 text-sm">
+                        سیستم امنیتی پیشرفته برای جلوگیری از هرگونه تقلب و ایجاد محیطی عادلانه برای همه بازیکنان.
+                    </p>
+                </div>
+                
+                <div class="feature-card rounded-lg p-6 animate-fade-in" style="animation-delay: 0.4s">
+                    <div class="text-purple-400 text-3xl mb-4">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">جامعه فعال</h3>
+                    <p class="text-gray-300 text-sm">
+                        جامعه‌ای پویا و فعال از بازیکنان که همواره در حال رشد و تعامل با یکدیگر هستند.
+                    </p>
+                </div>
+                
+                <div class="feature-card rounded-lg p-6 animate-fade-in" style="animation-delay: 0.5s">
+                    <div class="text-purple-400 text-3xl mb-4">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">محتوی منحصر به فرد</h3>
+                    <p class="text-gray-300 text-sm">
+                        اسکریپت‌ها و محتوی اختصاصی طراحی شده توسط تیم راک استار برای تجربه‌ای متفاوت.
+                    </p>
+                </div>
+                
+                <div class="feature-card rounded-lg p-6 animate-fade-in" style="animation-delay: 0.6s">
+                    <div class="text-purple-400 text-3xl mb-4">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">پشتیبانی 24 ساعته</h3>
+                    <p class="text-gray-300 text-sm">
+                        تیم پشتیبانی آماده پاسخگویی به سوالات و مشکلات شما در تمامی ساعات شبانه روز.
+                    </p>
+                </div>
+                
+                <div class="feature-card rounded-lg p-6 animate-fade-in" style="animation-delay: 0.7s">
+                    <div class="text-purple-400 text-3xl mb-4">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">بروزرسانی مداوم</h3>
+                    <p class="text-gray-300 text-sm">
+                        اضافه شدن ویژگی‌های جدید و رفع مشکلات به صورت مداوم برای بهبود تجربه کاربری.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- راه‌های ارتباطی -->
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-6 mt-12 text-center animate-fade-in" style="animation-delay: 0.8s">راه‌های ارتباطی</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 animate-fade-in" style="animation-delay: 0.9s">
+                <div class="about-card rounded-lg p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">ارتباط با پشتیبانی</h3>
+                    <div class="space-y-3">
+                        <a href="https://t.me/RockStartMTA_Support" target="_blank" class="contact-item flex items-center p-3 rounded-lg hover:bg-gray-700 transition">
+                            <div class="bg-purple-500 text-white p-2 rounded-full ml-3">
+                                <i class="fab fa-telegram-plane"></i>
+                            </div>
+                            <div>
+                                <p class="text-white">تلگرام پشتیبانی</p>
+                                <p class="text-gray-400 text-xs">@RockStartMTA_Support</p>
+                            </div>
+                        </a>
+                        
+                        <a href="mailto:support@rockstartmta.ir" class="contact-item flex items-center p-3 rounded-lg hover:bg-gray-700 transition">
+                            <div class="bg-purple-500 text-white p-2 rounded-full ml-3">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <p class="text-white">ایمیل پشتیبانی</p>
+                                <p class="text-gray-400 text-xs">support@rockstartmta.ir</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="about-card rounded-lg p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">شبکه‌های اجتماعی</h3>
+                    <div class="space-y-3">
+                        <a href="https://t.me/RockStartMTA" target="_blank" class="contact-item flex items-center p-3 rounded-lg hover:bg-gray-700 transition">
+                            <div class="bg-blue-500 text-white p-2 rounded-full ml-3">
+                                <i class="fab fa-telegram-plane"></i>
+                            </div>
+                            <div>
+                                <p class="text-white">کانال تلگرام</p>
+                                <p class="text-gray-400 text-xs">@RockStartMTA</p>
+                            </div>
+                        </a>
+                        
+                        <a href="https://instagram.com/RockStartMTA" target="_blank" class="contact-item flex items-center p-3 rounded-lg hover:bg-gray-700 transition">
+                            <div class="bg-pink-600 text-white p-2 rounded-full ml-3">
+                                <i class="fab fa-instagram"></i>
+                            </div>
+                            <div>
+                                <p class="text-white">اینستاگرام</p>
+                                <p class="text-gray-400 text-xs">@RockStartMTA</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- فوتر -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-gray-900 shadow-xl z-20 border-t border-gray-700">
+        <div class="container mx-auto flex justify-around items-center">
+            <a href="index.html" class="footer-tab text-gray-400 hover:text-white">
+                <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span>آگهی‌ها</span>
+            </a>
+            <a href="submit-ad.html" class="footer-tab text-gray-400 hover:text-white">
+                <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span>ثبت آگهی</span>
+            </a>
+            <a href="about.html" class="footer-tab active text-white">
+                <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>درباره ما</span>
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // اسکریپت منوی موبایل
+        $(document).ready(function() {
+            // باز کردن منوی موبایل
+            $('#hamburger-btn').click(function() {
+                $('#mobile-menu').addClass('show');
+                $('#mobile-menu-overlay').addClass('show');
+                $('body').css('overflow', 'hidden');
+            });
+            
+            // بستن منوی موبایل
+            $('#close-mobile-menu, #mobile-menu-overlay').click(function() {
+                $('#mobile-menu').removeClass('show');
+                $('#mobile-menu-overlay').removeClass('show');
+                $('body').css('overflow', 'auto');
+            });
+            
+            // جلوگیری از بسته شدن منو هنگام کلیک روی خود منو
+            $('#mobile-menu').click(function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
+</body>
+</html>

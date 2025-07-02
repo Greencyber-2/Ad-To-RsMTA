@@ -1,0 +1,45 @@
+@charset "UTF-8";
+body {
+    font-family: 'Vazir', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+}
+.category-btn:hover, .category-btn.active {
+    transform: scale(1.05);
+    transition: all 0.2s ease;
+}
+.ad-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #1f2937;
+}
+.ad-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4);
+}
+table tr:hover {
+    background-color: rgba(139, 92, 246, 0.3);
+}
+.container {
+    max-width: 1200px;
+}
+input, button, select, textarea {
+    outline: none;
+}
+input, select, textarea {
+    border: 1px solid #4b5563;
+}
+button {
+    cursor: pointer;
+}
+main {
+    overflow-y: auto;
+}
+#categories-menu {
+    transition: all 0.3s ease;
+}
+footer a {
+    transition: all 0.2s ease;
+}
+footer a:hover {
+    transform: translateY(-2px);
+}
+
