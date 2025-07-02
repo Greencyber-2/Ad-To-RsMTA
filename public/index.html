@@ -411,11 +411,30 @@
             });
             
             // جستجوی موبایل
-            $('#mobile-search-submit').click(function() {
-                const searchTerm = $('#mobile-search-input').val();
-                performSearch(searchTerm);
-                $('#mobile-search-container').removeClass('show');
+            $(document).ready(function () {
+                // باز کردن فرم جستجو
+                $('#mobile-search-btn').on('click', function () {
+                    $('#mobile-search-container').toggleClass('hidden');
+                    $('#mobile-search-input').focus();
+                });
+
+                // ارسال جستجو
+                $(document).on('click', '#mobile-search-submit', function () {
+                    const searchTerm = $('#mobile-search-input').val().trim();
+
+                    if (searchTerm === '') {
+                        console.warn('عبارت جستجو خالی است.');
+                        return;
+                    }
+
+                    console.log('در حال جستجو برای:', searchTerm);
+                    performSearch(searchTerm);
+
+                    // بستن فرم جستجو
+                    $('#mobile-search-container').addClass('hidden');
+                });
             });
+
             
             $('#mobile-search-input').keypress(function(e) {
                 if (e.which === 13) { // Enter key
