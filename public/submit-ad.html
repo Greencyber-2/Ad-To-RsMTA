@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ثبت آگهی جدید - راکستار ام تی ای</title>
+    <title>راکستار ام تی ای - راهنمای ثبت آگهی</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* استایل‌های سفارشی */
+        /* استایل‌های سفارشی مشابه index.html */
         .header-container {
             background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -21,30 +21,6 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-        }
-        
-        .step-card {
-            transition: all 0.3s ease;
-            border: 1px solid #4b5563;
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        
-        .step-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
-        }
-        
-        .step-card-header {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(236, 72, 153, 0.3) 100%);
-            padding: 1rem;
-            border-bottom: 1px solid #4b5563;
-        }
-        
-        .step-card-body {
-            padding: 1.5rem;
         }
         
         .footer-tab {
@@ -88,125 +64,209 @@
             display: block;
         }
         
-        /* انیمیشن‌ها */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* استایل‌های مخصوص صفحه راهنمای ثبت آگهی */
+        .guide-card {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border-right: 4px solid #7c3aed;
         }
         
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-        
-        /* استایل‌های فرم */
-        .submit-btn {
-            background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
-        }
-        
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 14px rgba(124, 58, 237, 0.3);
-        }
-        
-        .step-indicator {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
+        .guide-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #a78bfa;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
-            color: white;
-            margin-left: 0.75rem;
         }
         
-        .guide-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 0.75rem;
-            border-radius: 8px;
-            transition: all 0.2s ease;
+        .guide-card h3 i {
+            margin-left: 0.5rem;
         }
         
-        .guide-item:hover {
-            background-color: rgba(124, 58, 237, 0.1);
-        }
-        
-        .guide-number {
-            background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+        .step-number {
+            background-color: #7c3aed;
             color: white;
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            margin-left: 8px;
             font-size: 0.75rem;
-            margin-left: 0.75rem;
-            flex-shrink: 0;
         }
         
-        /* استایل‌های جدید برای منوی راست */
-        .mobile-menu-content {
-            direction: rtl;
-            text-align: right;
+        .telegram-btn {
+            background: linear-gradient(135deg, #0088cc 0%, #2aabee 100%);
+            color: white;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: all 0.2s;
         }
         
-        .mobile-menu-item {
-            justify-content: flex-end;
+        .telegram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(42, 171, 238, 0.4);
+        }
+        
+        .telegram-btn i {
+            margin-left: 0.5rem;
+            font-size: 1.25rem;
+        }
+        
+        .requirement-list {
+            list-style-type: none;
+            padding-right: 1.5rem;
+        }
+        
+        .requirement-list li {
+            position: relative;
+            margin-bottom: 0.5rem;
+            padding-right: 1.5rem;
+        }
+        
+        .requirement-list li::before {
+            content: "•";
+            color: #7c3aed;
+            font-weight: bold;
+            position: absolute;
+            right: 0;
+        }
+        
+        .note-box {
+            background-color: rgba(124, 58, 237, 0.1);
+            border-right: 3px solid #7c3aed;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        @media (min-width: 768px) {
+            .logo-badge {
+                position: static;
+                transform: none;
+                margin: 0 auto;
+            }
+            
+            .guide-container {
+                max-width: 800px;
+                margin: 0 auto;
+            }
         }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
-    <!-- هدر -->
+    <!-- هدر (کاملاً مشابه صفحه اصلی) -->
     <header class="fixed top-0 left-0 right-0 z-30 header-container">
-        <div class="container mx-auto px-4 py-3">
-            <div class="flex items-center justify-between">
-                <!-- بخش سمت راست - منوی همبرگری -->
-                <div class="flex items-center">
-                    <button id="hamburger-btn" class="md:hidden p-2 rounded-full hover:bg-gray-700 transition ml-3 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <i class="fas fa-bars text-white text-xl"></i>
+        <div class="container mx-auto px-4">
+            <div class="header-content flex items-center justify-between">
+                <!-- دکمه منوی همبرگری -->
+                <button id="hamburger-btn" class="md:hidden p-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <i class="fas fa-bars text-white text-xl"></i>
+                </button>
+                
+                <!-- لوگو و عنوان - در وسط -->
+                <div class="flex items-center justify-center flex-grow md:flex-grow-0">
+                    <div class="logo-badge text-white px-3 py-1 rounded-md font-bold flex items-center">
+                        <span class="ml-1">راکستار</span>
+                        <span class="text-xs bg-white text-purple-600 px-1 rounded mr-1">MTA</span>
+                    </div>
+                </div>
+                
+                <!-- بخش جستجوی دسکتاپ -->
+                <div class="hidden md:flex items-center flex-1 max-w-xl mx-4">
+                    <div class="relative w-full">
+                        <input type="text" id="search-input" class="w-full py-2 px-4 pr-10 rounded-full bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400" placeholder="جستجوی آگهی...">
+                        <button id="search-btn" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- بخش سمت چپ - جستجو در موبایل -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-search-btn" class="p-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <i class="fas fa-search text-white text-xl"></i>
                     </button>
                 </div>
-                
-                <!-- لوگو در مرکز -->
-                <div class="logo-badge text-white px-3 py-1 rounded-md font-bold flex items-center">
-                    <span class="ml-1">راکستار</span>
-                    <span class="text-xs bg-white text-purple-600 px-1 rounded mr-1">MTA</span>
+            </div>
+            
+            <!-- جستجوی موبایل -->
+            <div id="mobile-search-container" class="mobile-search-container">
+                <div class="relative pb-3">
+                    <input type="text" id="mobile-search-input" class="w-full py-2 px-4 pr-10 rounded-full bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400" placeholder="جستجوی آگهی...">
+                    <button id="mobile-search-submit" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
+                        <i class="fas fa-search"></i>
+                    </button>
                 </div>
-                
-                <!-- بخش سمت چپ - خالی برای بالانس -->
-                <div class="w-10"></div>
+            </div>
+            
+            <!-- منوی دسکتاپ -->
+            <div id="desktop-menu" class="hidden md:block mt-3">
+                <div class="rounded-lg bg-gradient-to-br from-gray-800 to-gray-700 shadow-2xl overflow-hidden">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 p-4">
+                        <a href="index.html" class="bg-gradient-to-r from-purple-500 to-orange-500 text-white p-3 rounded-lg hover:from-purple-600 hover:to-orange-600 transition card-hover flex items-center gap-2 text-sm animate-fade-in">
+                            <i class="fas fa-th-list ml-1"></i>
+                            همه آگهی‌ها
+                        </a>
+                        <a href="#" class="bg-gradient-to-r from-blue-500 to-teal-500 text-white p-3 rounded-lg hover:from-blue-600 hover:to-teal-600 transition card-hover flex items-center gap-2 text-sm animate-fade-in" style="animation-delay: 0.1s">
+                            <i class="fas fa-car ml-1"></i>
+                            خودرو و وسایل نقلیه
+                        </a>
+                        <a href="#" class="bg-gradient-to-r from-green-500 to-lime-500 text-white p-3 rounded-lg hover:from-green-600 hover:to-lime-600 transition card-hover flex items-center gap-2 text-sm animate-fade-in" style="animation-delay: 0.2s">
+                            <i class="fas fa-motorcycle ml-1"></i>
+                            موتورسیکلت‌ها
+                        </a>
+                        <a href="#" class="bg-gradient-to-r from-yellow-500 to-amber-500 text-white p-3 rounded-lg hover:from-yellow-600 hover:to-amber-600 transition card-hover flex items-center gap-2 text-sm animate-fade-in" style="animation-delay: 0.3s">
+                            <i class="fas fa-home ml-1"></i>
+                            املاک و مستغلات
+                        </a>
+                        <a href="#" class="bg-gradient-to-r from-red-500 to-pink-500 text-white p-3 rounded-lg hover:from-red-600 hover:to-pink-600 transition card-hover flex items-center gap-2 text-sm animate-fade-in" style="animation-delay: 0.4s">
+                            <i class="fas fa-box-open ml-1"></i>
+                            لوازم و تجهیزات
+                        </a>
+                        <a href="submit-ad.html" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white p-3 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition card-hover flex items-center gap-2 text-sm animate-fade-in active" style="animation-delay: 0.5s">
+                            <i class="fas fa-plus-circle ml-1"></i>
+                            ثبت آگهی
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- منوی موبایل -->
+    <!-- منوی موبایل (کاملاً مشابه صفحه اصلی) -->
     <div id="mobile-menu-overlay"></div>
     <div id="mobile-menu">
-        <div class="h-full flex flex-col mobile-menu-content">
+        <div class="h-full flex flex-col">
             <div class="flex justify-between items-center p-4 border-b border-gray-700">
+                <h3 class="text-lg font-bold text-white">منو</h3>
                 <button id="close-mobile-menu" class="text-gray-400 hover:text-white">
                     <i class="fas fa-times text-xl"></i>
                 </button>
-                <h3 class="text-lg font-bold text-white">منو</h3>
             </div>
             <div class="flex-1 overflow-y-auto p-4">
                 <div class="space-y-2">
-                    <a href="index.html" class="w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center mobile-menu-item gap-2">
-                        <i class="fas fa-th-list"></i>
+                    <a href="index.html" class="w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2">
                         <span>آگهی‌ها</span>
+                        <i class="fas fa-th-list"></i>
                     </a>
-                    <a href="submit-ad.html" class="w-full text-right py-3 px-4 bg-gray-700 text-white rounded-lg flex items-center mobile-menu-item gap-2">
-                        <i class="fas fa-plus"></i>
-                        <span>ثبت آگهی</span>
+                    <a href="submit-ad.html" class="w-full text-right py-3 px-4 bg-gray-700 text-white rounded-lg flex items-center justify-end gap-2">
+                        <span>راهنمای ثبت آگهی</span>
+                        <i class="fas fa-plus-circle"></i>
                     </a>
-                    <a href="about.html" class="w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center mobile-menu-item gap-2">
-                        <i class="fas fa-info-circle"></i>
+                    <a href="about.html" class="w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2">
                         <span>درباره ما</span>
+                        <i class="fas fa-info-circle"></i>
                     </a>
                 </div>
             </div>
@@ -215,101 +275,96 @@
 
     <!-- محتوای اصلی -->
     <main class="container mx-auto pt-24 pb-24 min-h-[calc(100vh-10rem)] px-4">
-        <div class="max-w-3xl mx-auto">
-            <h1 class="text-2xl md:text-3xl font-bold text-center mb-8 text-white">ثبت آگهی جدید</h1>
+        <div class="guide-container">
+            <h1 class="text-2xl md:text-3xl font-bold text-center mb-8">راهنمای ثبت آگهی در راکستار ام تی ای</h1>
             
-            <!-- مراحل ثبت آگهی -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <!-- مرحله 1 -->
-                <div class="step-card animate-fade-in" style="animation-delay: 0.1s">
-                    <div class="step-card-header flex items-center">
-                        <div class="step-indicator">1</div>
-                        <h3 class="text-lg font-bold text-white">آماده‌سازی محتوا</h3>
-                    </div>
-                    <div class="step-card-body">
-                        <p class="text-gray-300 text-sm leading-relaxed">
-                            اطلاعات کامل آگهی خود را شامل عنوان، توضیحات دقیق، قیمت به پول گیم و تصاویر باکیفیت آماده کنید. دقت کنید اطلاعات باید واقعی و کامل باشند.
-                        </p>
-                    </div>
-                </div>
+            <div class="guide-card">
+                <h3><i class="fas fa-info-circle"></i>راهنمای ثبت آگهی</h3>
+                <p class="text-gray-300 mb-4">برای ثبت آگهی در راکستار ام تی ای، لطفاً مراحل زیر را به دقت دنبال کنید:</p>
                 
-                <!-- مرحله 2 -->
-                <div class="step-card animate-fade-in" style="animation-delay: 0.2s">
-                    <div class="step-card-header flex items-center">
-                        <div class="step-indicator">2</div>
-                        <h3 class="text-lg font-bold text-white">ارسال به ربات تلگرام</h3>
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="font-bold text-lg flex items-center">
+                            <span class="step-number">1</span>
+                            مرحله اول: آماده‌سازی اطلاعات
+                        </h4>
+                        <p class="text-gray-400 mt-2">اطلاعات کامل آگهی خود را شامل موارد زیر آماده کنید:</p>
+                        <ul class="requirement-list mt-2">
+                            <li>عنوان دقیق و واضح برای آگهی</li>
+                            <li>توضیحات کامل و شفاف درباره آگهی</li>
+                            <li>قیمت به پول گیم (به صورت عددی و بدون حروف)</li>
+                            <li>تصاویر باکیفیت از آیتم مورد نظر (حداقل 2 تصویر)</li>
+                        </ul>
+                        <div class="note-box">
+                            <p class="text-sm text-purple-200"><i class="fas fa-exclamation-circle ml-1"></i> توجه: اطلاعات ناقص یا غیرواقعی باعث رد آگهی خواهند شد.</p>
+                        </div>
                     </div>
-                    <div class="step-card-body">
-                        <p class="text-gray-300 text-sm leading-relaxed">
-                            اطلاعات را به ربات تلگرام ما به آدرس 
-                            <a href="https://t.me/RockStartMTA_Bot" target="_blank" class="text-purple-400 hover:underline font-medium">@RockStartMTA_Bot</a> 
-                            ارسال کنید. می‌توانید تصاویر را مستقیماً در ربات آپلود نمایید.
-                        </p>
+                    
+                    <div>
+                        <h4 class="font-bold text-lg flex items-center">
+                            <span class="step-number">2</span>
+                            مرحله دوم: ارسال به ربات تلگرام
+                        </h4>
+                        <p class="text-gray-400 mt-2">پس از آماده‌سازی اطلاعات، آنها را به ربات تلگرام ما ارسال کنید:</p>
+                        <ol class="requirement-list mt-2" style="list-style-type: decimal; padding-right: 2rem;">
+                            <li>به ربات <span class="text-blue-400">@RockStartMTA_Bot</span> در تلگرام مراجعه کنید.</li>
+                            <li>دستور <span class="bg-gray-700 px-2 py-1 rounded">/new</span> را ارسال کنید.</li>
+                            <li>اطلاعات آگهی را طبق راهنمای ربات تکمیل نمایید.</li>
+                            <li>تصاویر را مستقیماً در ربات آپلود کنید.</li>
+                        </ol>
                     </div>
-                </div>
-                
-                <!-- مرحله 3 -->
-                <div class="step-card animate-fade-in" style="animation-delay: 0.3s">
-                    <div class="step-card-header flex items-center">
-                        <div class="step-indicator">3</div>
-                        <h3 class="text-lg font-bold text-white">تایید و انتشار</h3>
+                    
+                    <div>
+                        <h4 class="font-bold text-lg flex items-center">
+                            <span class="step-number">3</span>
+                            مرحله سوم: تایید و انتشار
+                        </h4>
+                        <p class="text-gray-400 mt-2">پس از ارسال اطلاعات:</p>
+                        <ul class="requirement-list mt-2">
+                            <li>آگهی شما توسط تیم مدیریت بررسی خواهد شد.</li>
+                            <li>در صورت تایید، آگهی حداکثر ظرف 24 ساعت در سایت منتشر می‌شود.</li>
+                            <li>از طریق ربات تلگرام از وضعیت آگهی مطلع خواهید شد.</li>
+                            <li>در صورت نیاز به اصلاحات، راهنمایی لازم ارائه می‌شود.</li>
+                        </ul>
                     </div>
-                    <div class="step-card-body">
-                        <p class="text-gray-300 text-sm leading-relaxed">
-                            پس از بررسی و تایید ادمین، آگهی شما حداکثر ظرف 24 ساعت در سایت منتشر خواهد شد. شما از طریق ربات از وضعیت آگهی مطلع خواهید شد.
-                        </p>
+                    
+                    <div class="text-center">
+                        <a href="https://t.me/RockStartMTA_Bot" target="_blank" class="telegram-btn inline-block">
+                            <i class="fab fa-telegram"></i>
+                            ارسال آگهی از طریق ربات
+                        </a>
                     </div>
                 </div>
             </div>
             
-            <!-- راهنمای ثبت آگهی -->
-            <div class="bg-gray-800 rounded-xl p-6 mb-8 animate-fade-in" style="animation-delay: 0.4s">
-                <h2 class="text-xl font-bold text-white mb-4 flex items-center">
-                    <i class="fas fa-info-circle text-purple-400 ml-2"></i>
-                    <span>راهنمای ثبت آگهی</span>
-                </h2>
-                <div class="space-y-3">
-                    <div class="guide-item">
-                        <div class="guide-number">1</div>
-                        <p class="text-gray-300 text-sm leading-relaxed flex-1">
-                            اطلاعات آگهی باید کامل و دقیق باشد. آگهی‌های ناقص یا با اطلاعات نادرست تایید نمی‌شوند.
-                        </p>
+            <div class="guide-card mt-6">
+                <h3><i class="fas fa-question-circle"></i>سوالات متداول</h3>
+                <div class="space-y-4 mt-4">
+                    <div>
+                        <h4 class="font-bold">آیا ثبت آگهی هزینه دارد؟</h4>
+                        <p class="text-gray-400 mt-1">خیر، ثبت آگهی در راکستار ام تی ای کاملاً رایگان است.</p>
                     </div>
-                    <div class="guide-item">
-                        <div class="guide-number">2</div>
-                        <p class="text-gray-300 text-sm leading-relaxed flex-1">
-                            تصاویر باید با کیفیت و مربوط به آگهی باشند. حداکثر 5 تصویر با فرمت JPG یا PNG قابل ارسال است.
-                        </p>
+                    
+                    <div>
+                        <h4 class="font-bold">مدت زمان بررسی آگهی چقدر است؟</h4>
+                        <p class="text-gray-400 mt-1">معمولاً آگهی‌ها ظرف 12 تا 24 ساعت بررسی و منتشر می‌شوند.</p>
                     </div>
-                    <div class="guide-item">
-                        <div class="guide-number">3</div>
-                        <p class="text-gray-300 text-sm leading-relaxed flex-1">
-                            قیمت باید واقعی و به پول گیم باشد. در صورت نیاز به چانه‌زنی، می‌توانید گزینه "قابل مذاکره" را انتخاب کنید.
-                        </p>
+                    
+                    <div>
+                        <h4 class="font-bold">چرا آگهی من رد شده است؟</h4>
+                        <p class="text-gray-400 mt-1">ممکن است به دلایلی مانند اطلاعات ناقص، قیمت غیرواقعی یا نقض قوانین سرور، آگهی شما رد شده باشد.</p>
                     </div>
-                    <div class="guide-item">
-                        <div class="guide-number">4</div>
-                        <p class="text-gray-300 text-sm leading-relaxed flex-1">
-                            آگهی‌های تکراری، اسپم، غیراخلاقی یا خلاف قوانین سرور حذف خواهند شد.
-                        </p>
+                    
+                    <div>
+                        <h4 class="font-bold">چگونه آگهی خود را ویرایش یا حذف کنم؟</h4>
+                        <p class="text-gray-400 mt-1">از طریق ربات تلگرام می‌توانید درخواست ویرایش یا حذف آگهی را ارسال کنید.</p>
                     </div>
                 </div>
-            </div>
-            
-            <!-- دکمه انتقال به ربات تلگرام -->
-            <div class="text-center animate-fade-in" style="animation-delay: 0.5s">
-                <a href="https://t.me/RockStartMTA_Bot" target="_blank" class="inline-block submit-btn text-white font-bold py-3 px-8 rounded-full text-lg transition-all duration-300">
-                    <i class="fab fa-telegram-plane ml-2"></i>
-                    انتقال به ربات تلگرام
-                </a>
-                <p class="text-gray-400 mt-4 text-sm">
-                    پس از کلیک بر روی دکمه بالا، شما به ربات تلگرام ما منتقل می‌شوید تا مراحل ثبت آگهی را تکمیل کنید.
-                </p>
             </div>
         </div>
     </main>
 
-    <!-- فوتر -->
+    <!-- فوتر (کاملاً مشابه صفحه اصلی) -->
     <footer class="fixed bottom-0 left-0 right-0 bg-gray-900 shadow-xl z-20 border-t border-gray-700">
         <div class="container mx-auto flex justify-around items-center">
             <a href="index.html" class="footer-tab text-gray-400 hover:text-white">
@@ -334,23 +389,65 @@
     </footer>
 
     <script>
-        // اسکریپت منوی موبایل
+        // اسکریپت برای مدیریت منوی موبایل و جستجو (کاملاً مشابه صفحه اصلی)
         $(document).ready(function() {
-            // باز کردن منوی موبایل
+            // مدیریت منوی موبایل
             $('#hamburger-btn').click(function() {
                 $('#mobile-menu').addClass('show');
                 $('#mobile-menu-overlay').addClass('show');
             });
             
-            // بستن منوی موبایل
             $('#close-mobile-menu, #mobile-menu-overlay').click(function() {
                 $('#mobile-menu').removeClass('show');
                 $('#mobile-menu-overlay').removeClass('show');
             });
             
-            // جلوگیری از بسته شدن منو هنگام کلیک روی خود منو
-            $('#mobile-menu').click(function(e) {
-                e.stopPropagation();
+            // مدیریت جستجوی موبایل
+            $('#mobile-search-btn').click(function() {
+                $('#mobile-search-container').toggleClass('show');
+                $('#mobile-search-input').focus();
+            });
+            
+            // تابع جستجوی مشترک برای موبایل و دسکتاپ
+            function performSearch(searchTerm) {
+                // در این صفحه جستجو کاربر را به صفحه اصلی هدایت می‌کند
+                if (searchTerm.trim() !== '') {
+                    window.location.href = `index.html?search=${encodeURIComponent(searchTerm)}`;
+                }
+            }
+            
+            // جستجوی دسکتاپ
+            $('#search-btn').click(function() {
+                const searchTerm = $('#search-input').val();
+                performSearch(searchTerm);
+            });
+            
+            $('#search-input').keypress(function(e) {
+                if (e.which === 13) { // Enter key
+                    const searchTerm = $('#search-input').val();
+                    performSearch(searchTerm);
+                }
+            });
+            
+            // جستجوی موبایل
+            $('#mobile-search-submit').click(function() {
+                const searchTerm = $('#mobile-search-input').val();
+                performSearch(searchTerm);
+            });
+            
+            $('#mobile-search-input').keypress(function(e) {
+                if (e.which === 13) { // Enter key
+                    const searchTerm = $('#mobile-search-input').val();
+                    performSearch(searchTerm);
+                    $('#mobile-search-container').removeClass('show');
+                }
+            });
+            
+            // بستن جستجوی موبایل هنگام اسکرول
+            $(window).scroll(function() {
+                if ($(window).scrollTop() > 10) {
+                    $('#mobile-search-container').removeClass('show');
+                }
             });
         });
     </script>

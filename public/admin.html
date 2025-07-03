@@ -5,108 +5,493 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>پنل مدیریت - راکستار ام تی ای</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <style>
+        /* Custom Styles */
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .sidebar-collapsed {
+            width: 80px;
+        }
+        .sidebar-expanded {
+            width: 250px;
+        }
+        .main-content {
+            transition: margin-right 0.3s ease;
+        }
+        .content-expanded {
+            margin-right: 250px;
+        }
+        .content-collapsed {
+            margin-right: 80px;
+        }
+        .stat-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            min-width: 160px;
+            z-index: 1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                z-index: 40;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar-open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-right: 0 !important;
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+        /* Image preview styles */
+        .image-preview-container {
+            position: relative;
+        }
+        .image-preview-container:hover .image-actions {
+            opacity: 1;
+        }
+        .image-actions {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        /* Loading spinner */
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6b7280;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+        /* Active nav item */
+        .nav-item.active {
+            background-color: #374151;
+            color: #a855f7;
+        }
+        /* Dashboard development notice */
+        .dev-notice {
+            background: repeating-linear-gradient(
+                45deg,
+                #1f2937,
+                #1f2937 10px,
+                #111827 10px,
+                #111827 20px
+            );
+            border-left: 4px solid #a855f7;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-100">
-    <!-- Fixed Header -->
-    <header class="fixed top-0 left-0 right-0 bg-gray-800 shadow-md z-20 p-4">
-        <div class="container mx-auto flex justify-center items-center">
-            <h1 class="text-xl sm:text-2xl font-bold text-purple-500">پنل مدیریت</h1>
-        </div>
-    </header>
-
-    <!-- Scrollable Content -->
-    <main class="container mx-auto pt-20 pb-20 min-h-[calc(100vh-10rem)]">
-        <!-- Admin Login -->
-        <section id="admin-login" class="p-4">
-            <div class="bg-gray-800 p-4 rounded-lg shadow-md max-w-md mx-auto">
-                <h2 class="text-lg sm:text-xl font-bold text-purple-500 mb-4">ورود به پنل مدیریت</h2>
-                <input type="password" id="admin-password" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none mb-4" placeholder="رمز عبور">
-                <button id="login-btn" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition w-full">ورود</button>
+<body class="bg-gray-900 text-gray-100 font-sans">
+    <!-- Admin Login (Initial State) -->
+    <section id="admin-login" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-md max-w-md w-full border border-gray-700">
+            <div class="text-center mb-6">
+                <img src="rsmta.png" alt="Logo" class="h-16 w-16 mx-auto mb-3 rounded-full border-2 border-purple-500">
+                <h2 class="text-xl font-bold text-purple-500">ورود به پنل مدیریت</h2>
+                <p class="text-gray-400 text-sm mt-1">لطفاً برای ادامه رمز عبور خود را وارد کنید</p>
             </div>
-        </section>
-
-        <!-- Admin Panel -->
-        <section id="admin-panel" class="p-4 hidden">
-            <div class="bg-gray-800 p-4 rounded-lg shadow-md mb-6">
-                <h2 class="text-lg sm:text-xl font-bold text-purple-500 mb-4">افزودن آگهی جدید</h2>
-                <div class="grid grid-cols-1 gap-4">
-                    <input type="text" id="ad-title" class="p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none" placeholder="عنوان آگهی">
-                    <input type="text" id="ad-price" class="p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none" placeholder="قیمت ($)">
-                    <input type="text" id="ad-game-id" class="p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none" placeholder="شماره گیم">
-                    <input type="text" id="ad-player-name" class="p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none" placeholder="نام پلیر">
-                    <input type="text" id="ad-referral" class="p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none" placeholder="رفرال پلیر">
-                    <textarea id="ad-description" class="p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none" placeholder="توضیحات"></textarea>
-                    <select id="ad-category" class="p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none">
-                        <option value="cars">ماشین</option>
-                        <option value="motorcycles">موتور</option>
-                        <option value="houses">خانه</option>
-                        <option value="items">آیتم</option>
-                        <option value="others">سایر</option>
-                    </select>
-                    <div id="location-container" class="hidden">
-                        <select id="ad-location" class="p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none w-full">
-                            <option value="LV">LV</option>
-                            <option value="LS">LS</option>
-                            <option value="SF">SF</option>
-                        </select>
+            <div class="space-y-4">
+                <div>
+                    <label for="admin-password" class="block text-gray-400 mb-1">رمز عبور</label>
+                    <div class="relative">
+                        <input type="password" id="admin-password" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="رمز عبور ادمین">
+                        <button id="toggle-password" class="absolute left-3 top-3 text-gray-400 hover:text-gray-300">
+                            <i class="fas fa-eye"></i>
+                        </button>
                     </div>
-                    <div class="border border-gray-600 rounded-lg p-3">
-                        <label class="block text-gray-400 mb-2">تصاویر آگهی (اولین تصویر به عنوان تصویر اصلی نمایش داده می‌شود)</label>
-                        <input type="file" id="ad-images" class="w-full" multiple accept="image/*">
-                        <div id="image-preview" class="mt-3 grid grid-cols-3 gap-2"></div>
-                    </div>
-                    <button id="add-ad-btn" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition">افزودن آگهی</button>
                 </div>
+                <button id="login-btn" class="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-3 rounded-lg hover:from-purple-600 hover:to-blue-600 transition font-semibold flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt ml-2"></i>
+                    ورود به سیستم
+                </button>
             </div>
-
-            <div class="bg-gray-800 p-4 rounded-lg shadow-md">
-                <h2 class="text-lg sm:text-xl font-bold text-purple-500 mb-4">لیست آگهی‌ها</h2>
-                <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                    <select id="admin-category-filter" class="p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none flex-1">
-                        <option value="all">همه</option>
-                        <option value="cars">ماشین</option>
-                        <option value="motorcycles">موتور</option>
-                        <option value="houses">خانه</option>
-                        <option value="items">آیتم</option>
-                        <option value="others">سایر</option>
-                    </select>
-                    <select id="admin-status-filter" class="p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none flex-1">
-                        <option value="all">همه وضعیت‌ها</option>
-                        <option value="published">منتشر شده</option>
-                        <option value="pending">در انتظار تأیید</option>
-                    </select>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right">
-                        <thead>
-                            <tr class="bg-gray-700">
-                                <th class="p-2">تصویر</th>
-                                <th class="p-2">عنوان</th>
-                                <th class="p-2">قیمت</th>
-                                <th class="p-2">دسته‌بندی</th>
-                                <th class="p-2">وضعیت</th>
-                                <th class="p-2">عملیات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-ads-list"></tbody>
-                    </table>
-                </div>
+            <div class="mt-4 text-center text-sm text-gray-400">
+                <p>رمز عبور خود را فراموش کرده‌اید؟ <a href="#" class="text-purple-400 hover:underline">بازیابی رمز عبور</a></p>
             </div>
-        </section>
-    </main>
-
-    <!-- Fixed Material Footer -->
-    <footer class="fixed bottom-0 left-0 right-0 bg-gray-800 shadow-md p-4 z-20">
-        <div class="container mx-auto flex justify-center gap-2 sm:gap-4">
-            <a href="index.html" class="bg-gradient-to-r from-purple-500 to-orange-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-md hover:from-purple-600 hover:to-orange-600 transition font-semibold text-sm sm:text-base">آگهی‌ها</a>
-            <a href="submit-ad.html" class="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-md hover:from-orange-600 hover:to-red-600 transition font-semibold text-sm sm:text-base">ثبت آگهی</a>
-            <a href="about.html" class="bg-gradient-to-r from-red-500 to-purple-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-md hover:from-red-600 hover:to-purple-600 transition font-semibold text-sm sm:text-base">درباره ما</a>
         </div>
-    </footer>
+    </section>
 
+    <!-- Admin Panel (Hidden Initially) -->
+    <div id="admin-panel" class="hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar sidebar-expanded fixed top-0 right-0 h-screen bg-gray-800 shadow-lg overflow-y-auto z-30">
+            <div class="p-4 flex flex-col h-full">
+                <!-- Logo and Toggle -->
+                <div class="flex items-center justify-between border-b border-gray-700 pb-4">
+                    <div class="flex items-center space-x-2">
+                        <img src="rsmta.png" alt="Logo" class="h-10 w-10 rounded-full">
+                        <span class="text-xl font-bold text-purple-500 whitespace-nowrap">پنل مدیریت</span>
+                    </div>
+                    <button id="sidebar-toggle" class="text-gray-400 hover:text-white lg:hidden">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Admin Profile -->
+                <div class="py-4 border-b border-gray-700 flex items-center space-x-3">
+                    <div class="relative">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=7e22ce&color=fff" alt="Admin" class="h-12 w-12 rounded-full border-2 border-purple-500">
+                        <span class="absolute bottom-0 right-0 bg-green-500 rounded-full w-3 h-3 border-2 border-gray-800"></span>
+                    </div>
+                    <div>
+                        <p class="font-semibold">مدیر سیستم</p>
+                        <p class="text-xs text-gray-400">دسترسی کامل</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="flex-1 mt-4">
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="#" id="dashboard-link" class="nav-item flex items-center p-2 rounded-lg hover:bg-gray-700 transition">
+                                <i class="fas fa-tachometer-alt ml-2"></i>
+                                <span>داشبورد</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" id="ads-management-link" class="nav-item active flex items-center p-2 rounded-lg hover:bg-gray-700 transition">
+                                <i class="fas fa-ad ml-2"></i>
+                                <span>مدیریت آگهی‌ها</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" id="add-new-ad-link" class="nav-item flex items-center p-2 rounded-lg hover:bg-gray-700 transition">
+                                <i class="fas fa-plus-circle ml-2"></i>
+                                <span>افزودن آگهی جدید</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Footer/Sign Out -->
+                <div class="mt-auto pt-4 border-t border-gray-700">
+                    <button id="logout-btn" class="w-full flex items-center justify-center p-2 rounded-lg bg-red-500 hover:bg-red-600 transition">
+                        <i class="fas fa-sign-out-alt ml-2"></i>
+                        <span>خروج از سیستم</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="mobile-menu-btn fixed top-4 right-4 z-40 bg-gray-800 p-2 rounded-lg lg:hidden">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Main Content -->
+        <main class="main-content content-expanded min-h-screen">
+            <!-- Dashboard Content (Hidden Initially) -->
+            <section id="dashboard-section" class="hidden pt-4 pb-24 px-4">
+                <div class="dev-notice p-4 rounded-lg mb-6">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 pt-1">
+                            <i class="fas fa-tools text-purple-500 text-xl"></i>
+                        </div>
+                        <div class="mr-3">
+                            <h3 class="text-lg font-bold text-purple-400">این بخش در حال توسعه است</h3>
+                            <p class="text-gray-300 mt-1">داشبورد مدیریت به زودی با آمار و گزارشات پیشرفته در دسترس خواهد بود.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="stat-card bg-gray-800 rounded-lg p-4 shadow-md border-r-4 border-purple-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400">آگهی‌های فعال</p>
+                                <h3 class="text-2xl font-bold" id="active-ads-count">0</h3>
+                            </div>
+                            <div class="bg-purple-500 bg-opacity-20 p-3 rounded-full">
+                                <i class="fas fa-ad text-purple-500"></i>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">در حال بارگذاری...</p>
+                    </div>
+                    <div class="stat-card bg-gray-800 rounded-lg p-4 shadow-md border-r-4 border-blue-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400">کاربران ثبت‌نامی</p>
+                                <h3 class="text-2xl font-bold" id="users-count">0</h3>
+                            </div>
+                            <div class="bg-blue-500 bg-opacity-20 p-3 rounded-full">
+                                <i class="fas fa-users text-blue-500"></i>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">در حال بارگذاری...</p>
+                    </div>
+                    <div class="stat-card bg-gray-800 rounded-lg p-4 shadow-md border-r-4 border-green-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400">آگهی‌های امروز</p>
+                                <h3 class="text-2xl font-bold" id="today-ads-count">0</h3>
+                            </div>
+                            <div class="bg-green-500 bg-opacity-20 p-3 rounded-full">
+                                <i class="fas fa-calendar-day text-green-500"></i>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">در حال بارگذاری...</p>
+                    </div>
+                    <div class="stat-card bg-gray-800 rounded-lg p-4 shadow-md border-r-4 border-yellow-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400">درآمد ماهانه</p>
+                                <h3 class="text-2xl font-bold" id="monthly-income">$0</h3>
+                            </div>
+                            <div class="bg-yellow-500 bg-opacity-20 p-3 rounded-full">
+                                <i class="fas fa-dollar-sign text-yellow-500"></i>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">در حال بارگذاری...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ads Management Section (Default Visible) -->
+            <section id="ads-management-section" class="pt-4 pb-24 px-4">
+                <div class="bg-gray-800 rounded-lg shadow-md border border-gray-700">
+                    <div class="p-4 border-b border-gray-700">
+                        <h2 class="text-lg font-bold text-purple-500 mb-4">لیست آگهی‌ها</h2>
+                        <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                            <div class="flex-1 relative">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                <input type="text" id="admin-search" class="w-full p-2 pl-10 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="جستجوی آگهی‌ها...">
+                            </div>
+                            <select id="admin-category-filter" class="p-2 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent flex-1">
+                                <option value="all">همه دسته‌بندی‌ها</option>
+                                <option value="cars">ماشین</option>
+                                <option value="motorcycles">موتور</option>
+                                <option value="houses">خانه</option>
+                                <option value="items">آیتم</option>
+                                <option value="others">سایر</option>
+                            </select>
+                            <select id="admin-status-filter" class="p-2 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent flex-1">
+                                <option value="all">همه وضعیت‌ها</option>
+                                <option value="published">منتشر شده</option>
+                                <option value="pending">در انتظار تأیید</option>
+                                <option value="rejected">رد شده</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-right">
+                            <thead>
+                                <tr class="bg-gray-700">
+                                    <th class="p-3">تصویر</th>
+                                    <th class="p-3">عنوان</th>
+                                    <th class="p-3">قیمت</th>
+                                    <th class="p-3">دسته‌بندی</th>
+                                    <th class="p-3">وضعیت</th>
+                                    <th class="p-3">تاریخ</th>
+                                    <th class="p-3">عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-ads-list" class="divide-y divide-gray-700">
+                                <!-- Ads will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 border-t border-gray-700 flex justify-between items-center">
+                        <div class="text-sm text-gray-400">
+                            نمایش <span id="showing-from">1</span> تا <span id="showing-to">10</span> از <span id="total-ads">0</span> آگهی
+                        </div>
+                        <div class="flex space-x-1">
+                            <button id="prev-page" class="px-3 py-1 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <div class="flex space-x-1" id="pagination-numbers">
+                                <!-- Pagination numbers will be added here -->
+                            </div>
+                            <button id="next-page" class="px-3 py-1 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add New Ad Section (Hidden Initially) -->
+            <section id="add-new-ad-section" class="hidden pt-4 pb-24 px-4">
+                <div class="bg-gray-800 rounded-lg shadow-md mb-6 border border-gray-700">
+                    <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+                        <h2 class="text-lg font-bold text-purple-500">افزودن آگهی جدید</h2>
+                        <button id="close-add-ad-form" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="ad-form-container" class="p-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="ad-title" class="block text-gray-400 mb-1">عنوان آگهی <span class="text-red-500">*</span></label>
+                                <input type="text" id="ad-title" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="عنوان آگهی">
+                            </div>
+                            <div>
+                                <label for="ad-price" class="block text-gray-400 mb-1">قیمت ($) <span class="text-red-500">*</span></label>
+                                <input type="text" id="ad-price" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="قیمت">
+                            </div>
+                            <div>
+                                <label for="ad-game-id" class="block text-gray-400 mb-1">شماره گیم</label>
+                                <input type="text" id="ad-game-id" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="شماره گیم">
+                            </div>
+                            <div>
+                                <label for="ad-player-name" class="block text-gray-400 mb-1">نام پلیر</label>
+                                <input type="text" id="ad-player-name" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="نام پلیر">
+                            </div>
+                            <div>
+                                <label for="ad-referral" class="block text-gray-400 mb-1">رفرال پلیر</label>
+                                <input type="text" id="ad-referral" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="رفرال پلیر">
+                            </div>
+                            <div>
+                                <label for="ad-category" class="block text-gray-400 mb-1">دسته‌بندی <span class="text-red-500">*</span></label>
+                                <select id="ad-category" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option value="cars">ماشین</option>
+                                    <option value="motorcycles">موتور</option>
+                                    <option value="houses">خانه</option>
+                                    <option value="items">آیتم</option>
+                                    <option value="others">سایر</option>
+                                </select>
+                            </div>
+                            <div id="location-container" class="hidden">
+                                <label for="ad-location" class="block text-gray-400 mb-1">موقعیت <span class="text-red-500">*</span></label>
+                                <select id="ad-location" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option value="LV">LV</option>
+                                    <option value="LS">LS</option>
+                                    <option value="SF">SF</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="ad-description" class="block text-gray-400 mb-1">توضیحات <span class="text-red-500">*</span></label>
+                                <textarea id="ad-description" rows="4" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="توضیحات کامل آگهی"></textarea>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-gray-400 mb-1">تصاویر آگهی <span class="text-red-500">*</span></label>
+                                <div class="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center hover:border-purple-500 transition cursor-pointer" id="drop-zone">
+                                    <div class="flex flex-col items-center justify-center py-4">
+                                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-500 mb-2"></i>
+                                        <p class="text-gray-400">تصاویر را اینجا رها کنید یا کلیک کنید</p>
+                                        <p class="text-xs text-gray-500 mt-1">حداکثر 5 تصویر (هر تصویر حداکثر 2MB)</p>
+                                    </div>
+                                    <input type="file" id="ad-images" class="hidden" multiple accept="image/*">
+                                </div>
+                                <div id="image-preview" class="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2"></div>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end gap-3">
+                            <button id="reset-form-btn" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">پاک کردن فرم</button>
+                            <button id="add-ad-btn" class="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-2 rounded-lg hover:from-purple-600 hover:to-blue-600 transition font-semibold flex items-center">
+                                <i class="fas fa-plus ml-2"></i>
+                                افزودن آگهی
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        $(document).ready(() => {
+            // Navigation between sections
+            $('#dashboard-link').click(function(e) {
+                e.preventDefault();
+                $('.nav-item').removeClass('active bg-gray-700 text-purple-400');
+                $(this).addClass('active bg-gray-700 text-purple-400');
+                $('#dashboard-section').removeClass('hidden');
+                $('#ads-management-section, #add-new-ad-section').addClass('hidden');
+            });
+
+            $('#ads-management-link').click(function(e) {
+                e.preventDefault();
+                $('.nav-item').removeClass('active bg-gray-700 text-purple-400');
+                $(this).addClass('active bg-gray-700 text-purple-400');
+                $('#ads-management-section').removeClass('hidden');
+                $('#dashboard-section, #add-new-ad-section').addClass('hidden');
+                loadAdminAds();
+            });
+
+            $('#add-new-ad-link').click(function(e) {
+                e.preventDefault();
+                $('.nav-item').removeClass('active bg-gray-700 text-purple-400');
+                $(this).addClass('active bg-gray-700 text-purple-400');
+                $('#add-new-ad-section').removeClass('hidden');
+                $('#dashboard-section, #ads-management-section').addClass('hidden');
+            });
+
+            $('#close-add-ad-form').click(function() {
+                $('#add-new-ad-link').removeClass('active bg-gray-700 text-purple-400');
+                $('#ads-management-link').addClass('active bg-gray-700 text-purple-400');
+                $('#ads-management-section').removeClass('hidden');
+                $('#add-new-ad-section').addClass('hidden');
+            });
+
+            // Toggle sidebar on mobile
+            $('#mobile-menu-btn').click(function() {
+                $('.sidebar').toggleClass('sidebar-open');
+            });
+
+            $('#sidebar-toggle').click(function() {
+                $('.sidebar').toggleClass('sidebar-open');
+            });
+
+            // Drop zone functionality
+            $('#drop-zone').click(function() {
+                $('#ad-images').click();
+            });
+
+            $('#drop-zone').on('dragover', function(e) {
+                e.preventDefault();
+                $(this).addClass('border-purple-500 bg-gray-700');
+            });
+
+            $('#drop-zone').on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).removeClass('border-purple-500 bg-gray-700');
+            });
+
+            $('#drop-zone').on('drop', function(e) {
+                e.preventDefault();
+                $(this).removeClass('border-purple-500 bg-gray-700');
+                if (e.originalEvent.dataTransfer.files.length) {
+                    $('#ad-images')[0].files = e.originalEvent.dataTransfer.files;
+                    $('#ad-images').trigger('change');
+                }
+            });
+        });
+    </script>
     <script src="admin.js"></script>
 </body>
 </html>
