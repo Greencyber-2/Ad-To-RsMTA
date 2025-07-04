@@ -7,180 +7,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* استایل‌های سفارشی */
-        .header-container {
-            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-        }
-        
-        .logo-badge {
-            background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
-            box-shadow: 0 2px 10px rgba(124, 58, 237, 0.5);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .ad-card {
-            transition: all 0.2s ease;
-            border-bottom: 1px solid #374151;
-        }
-        
-        .ad-card:last-child {
-            border-bottom: none;
-        }
-        
-        .footer-tab {
-            position: relative;
-            padding: 12px 0;
-            flex: 1;
-            text-align: center;
-            font-size: 0.8rem;
-        }
-        
-        /* استایل‌های منوی همبرگری */
-        #mobile-menu-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 40;
-        }
-        
-        #mobile-menu {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 80%;
-            max-width: 300px;
-            height: 100%;
-            background-color: #1f2937;
-            z-index: 50;
-            transition: right 0.3s ease;
-            overflow-y: auto;
-        }
-        
-        #mobile-menu.show {
-            right: 0;
-        }
-        
-        #mobile-menu-overlay.show {
-            display: block;
-        }
-        
-        /* انیمیشن‌ها */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .animate-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-        
-        /* اسپینر لودینگ */
-        .loading-spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top: 3px solid #a78bfa;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* استایل‌های جدید برای نمایش آگهی‌ها در موبایل */
-        .ad-image {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        
-        .ad-price {
-            color: #f59e0b;
-            font-weight: bold;
-        }
-        
-        .ad-location {
-            font-size: 0.75rem;
-            color: #9ca3af;
-        }
-        
-        .ad-time {
-            font-size: 0.75rem;
-            color: #9ca3af;
-            margin-top: 4px;
-        }
-        
-        .ad-title {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* استایل‌های جدید برای هدر */
-        .header-content {
-            position: relative;
-            height: 60px;
-        }
-
-        .mobile-search-container {
-            transition: all 0.3s ease;
-            max-height: 0;
-            overflow: hidden;
-        }
-
-        .mobile-search-container.show {
-            max-height: 100px;
-            padding-top: 10px;
-        }
-
-        /* استایل برای آگهی‌های فیلتر شده */
-        .ad-card.hidden {
-            display: none;
-        }
-
-        @media (min-width: 768px) {
-            .logo-badge {
-                position: static;
-                transform: none;
-                margin: 0 auto;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 min-h-screen flex flex-col">
     <!-- هدر -->
-    <header class="fixed top-0 left-0 right-0 z-30 header-container">
+    <header class="fixed top-0 left-0 right-0 z-30 bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
         <div class="container mx-auto px-4">
-            <div class="header-content flex items-center justify-between">
+            <div class="flex items-center justify-between h-16">
                 <!-- دکمه منوی همبرگری -->
-                <button id="hamburger-btn" class="md:hidden p-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <button id="hamburger-btn" class="md:hidden p-2 rounded-full hover:bg-gray-700 transition">
                     <i class="fas fa-bars text-white text-xl"></i>
                 </button>
                 
-                <!-- لوگو و عنوان - در وسط -->
+                <!-- لوگو -->
                 <div class="flex items-center justify-center flex-grow md:flex-grow-0">
-                    <div class="logo-badge text-white px-3 py-1 rounded-md font-bold flex items-center">
+                    <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1 rounded-md font-bold flex items-center shadow-lg">
                         <span class="ml-1">راکستار</span>
                         <span class="text-xs bg-white text-purple-600 px-1 rounded mr-1">MTA</span>
                     </div>
                 </div>
                 
-                <!-- بخش جستجوی دسکتاپ -->
+                <!-- جستجوی دسکتاپ -->
                 <div class="hidden md:flex items-center flex-1 max-w-xl mx-4">
                     <div class="relative w-full">
                         <input type="text" id="search-input" class="w-full py-2 px-4 pr-10 rounded-full bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400" placeholder="جستجوی آگهی...">
@@ -190,17 +37,17 @@
                     </div>
                 </div>
                 
-                <!-- بخش سمت چپ - جستجو در موبایل -->
+                <!-- جستجوی موبایل -->
                 <div class="md:hidden flex items-center">
-                    <button id="mobile-search-btn" class="p-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <button id="mobile-search-btn" class="p-2 rounded-full hover:bg-gray-700 transition">
                         <i class="fas fa-search text-white text-xl"></i>
                     </button>
                 </div>
             </div>
             
-            <!-- جستجوی موبایل -->
-            <div id="mobile-search-container" class="mobile-search-container">
-                <div class="relative pb-3">
+            <!-- جستجوی موبایل (مخفی) -->
+            <div id="mobile-search-container" class="hidden transition-all duration-300 overflow-hidden">
+                <div class="relative py-2">
                     <input type="text" id="mobile-search-input" class="w-full py-2 px-4 pr-10 rounded-full bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400" placeholder="جستجوی آگهی...">
                     <button id="mobile-search-submit" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
                         <i class="fas fa-search"></i>
@@ -209,251 +56,113 @@
             </div>
             
             <!-- منوی دسکتاپ -->
-            <div id="desktop-menu" class="hidden md:block mt-3">
-                <div class="rounded-lg bg-gradient-to-br from-gray-800 to-gray-700 shadow-2xl overflow-hidden">
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 p-4">
-                        <button class="category-btn bg-gradient-to-r from-purple-500 to-orange-500 text-white p-3 rounded-lg hover:from-purple-600 hover:to-orange-600 transition card-hover flex items-center gap-2 text-sm animate-fade-in active" data-category="all">
-                            <i class="fas fa-th-list ml-1"></i>
-                            همه آگهی‌ها
-                        </button>
-                        <button class="category-btn bg-gradient-to-r from-blue-500 to-teal-500 text-white p-3 rounded-lg hover:from-blue-600 hover:to-teal-600 transition card-hover flex items-center gap-2 text-sm animate-fade-in" data-category="cars" style="animation-delay: 0.1s">
-                            <i class="fas fa-car ml-1"></i>
-                            خودرو و وسایل نقلیه
-                        </button>
-                        <button class="category-btn bg-gradient-to-r from-green-500 to-lime-500 text-white p-3 rounded-lg hover:from-green-600 hover:to-lime-600 transition card-hover flex items-center gap-2 text-sm animate-fade-in" data-category="motorcycles" style="animation-delay: 0.2s">
-                            <i class="fas fa-motorcycle ml-1"></i>
-                            موتورسیکلت‌ها
-                        </button>
-                        <button class="category-btn bg-gradient-to-r from-yellow-500 to-amber-500 text-white p-3 rounded-lg hover:from-yellow-600 hover:to-amber-600 transition card-hover flex items-center gap-2 text-sm animate-fade-in" data-category="houses" style="animation-delay: 0.3s">
-                            <i class="fas fa-home ml-1"></i>
-                            املاک و مستغلات
-                        </button>
-                        <button class="category-btn bg-gradient-to-r from-red-500 to-pink-500 text-white p-3 rounded-lg hover:from-red-600 hover:to-pink-600 transition card-hover flex items-center gap-2 text-sm animate-fade-in" data-category="items" style="animation-delay: 0.4s">
-                            <i class="fas fa-box-open ml-1"></i>
-                            لوازم و تجهیزات
-                        </button>
-                        <button class="category-btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white p-3 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition card-hover flex items-center gap-2 text-sm animate-fade-in" data-category="others" style="animation-delay: 0.5s">
-                            <i class="fas fa-ellipsis-h ml-1"></i>
-                            سایر دسته‌بندی‌ها
-                        </button>
-                    </div>
+            <div id="desktop-menu" class="hidden md:block py-3">
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <button class="category-btn bg-gradient-to-r from-purple-500 to-pink-500 text-white p-3 rounded-lg transition-all flex items-center gap-2 text-sm active" data-category="all">
+                        <i class="fas fa-th-list ml-1"></i>
+                        همه آگهی‌ها
+                    </button>
+                    <button class="category-btn bg-gradient-to-r from-blue-500 to-teal-500 text-white p-3 rounded-lg transition-all flex items-center gap-2 text-sm" data-category="cars">
+                        <i class="fas fa-car ml-1"></i>
+                        خودرو
+                    </button>
+                    <button class="category-btn bg-gradient-to-r from-green-500 to-lime-500 text-white p-3 rounded-lg transition-all flex items-center gap-2 text-sm" data-category="motorcycles">
+                        <i class="fas fa-motorcycle ml-1"></i>
+                        موتور
+                    </button>
+                    <button class="category-btn bg-gradient-to-r from-yellow-500 to-amber-500 text-white p-3 rounded-lg transition-all flex items-center gap-2 text-sm" data-category="houses">
+                        <i class="fas fa-home ml-1"></i>
+                        املاک
+                    </button>
+                    <button class="category-btn bg-gradient-to-r from-red-500 to-pink-500 text-white p-3 rounded-lg transition-all flex items-center gap-2 text-sm" data-category="items">
+                        <i class="fas fa-box-open ml-1"></i>
+                        لوازم
+                    </button>
+                    <button class="category-btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white p-3 rounded-lg transition-all flex items-center gap-2 text-sm" data-category="others">
+                        <i class="fas fa-ellipsis-h ml-1"></i>
+                        سایر
+                    </button>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- منوی موبایل -->
-    <div id="mobile-menu-overlay"></div>
-    <div id="mobile-menu">
-        <div class="h-full flex flex-col">
-            <div class="flex justify-between items-center p-4 border-b border-gray-700">
-                <h3 class="text-lg font-bold text-white">منو</h3>
-                <button id="close-mobile-menu" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            <div class="flex-1 overflow-y-auto p-4">
-                <div class="space-y-2">
-                    <button class="category-btn w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2 active" data-category="all">
-                        <span>همه آگهی‌ها</span>
-                        <i class="fas fa-th-list"></i>
-                    </button>
-                    <button class="category-btn w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2" data-category="cars">
-                        <span>خودرو و وسایل نقلیه</span>
-                        <i class="fas fa-car"></i>
-                    </button>
-                    <button class="category-btn w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2" data-category="motorcycles">
-                        <span>موتورسیکلت‌ها</span>
-                        <i class="fas fa-motorcycle"></i>
-                    </button>
-                    <button class="category-btn w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2" data-category="houses">
-                        <span>املاک و مستغلات</span>
-                        <i class="fas fa-home"></i>
-                    </button>
-                    <button class="category-btn w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2" data-category="items">
-                        <span>لوازم و تجهیزات</span>
-                        <i class="fas fa-box-open"></i>
-                    </button>
-                    <button class="category-btn w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2" data-category="others">
-                        <span>سایر دسته‌بندی‌ها</span>
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                </div>
-            </div>
+    <div id="mobile-menu-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+    <div id="mobile-menu" class="fixed top-0 right-[-100%] w-80 h-full bg-gray-800 z-50 transition-all duration-300 overflow-y-auto">
+        <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+            <h3 class="text-lg font-bold">منو</h3>
+            <button id="close-mobile-menu" class="text-gray-400 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-4 space-y-2">
+            <button class="category-btn w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2 active" data-category="all">
+                <span>همه آگهی‌ها</span>
+                <i class="fas fa-th-list"></i>
+            </button>
+            <button class="category-btn w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2" data-category="cars">
+                <span>خودرو</span>
+                <i class="fas fa-car"></i>
+            </button>
+            <button class="category-btn w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2" data-category="motorcycles">
+                <span>موتور</span>
+                <i class="fas fa-motorcycle"></i>
+            </button>
+            <button class="category-btn w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2" data-category="houses">
+                <span>املاک</span>
+                <i class="fas fa-home"></i>
+            </button>
+            <button class="category-btn w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2" data-category="items">
+                <span>لوازم</span>
+                <i class="fas fa-box-open"></i>
+            </button>
+            <button class="category-btn w-full text-right py-3 px-4 text-white hover:bg-gray-700 rounded-lg flex items-center justify-end gap-2" data-category="others">
+                <span>سایر</span>
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
         </div>
     </div>
 
     <!-- محتوای اصلی -->
-    <main class="container mx-auto pt-24 pb-24 min-h-[calc(100vh-10rem)] px-4">
-        <div id="ads-loading" class="hidden flex flex-col items-center justify-center py-8">
-            <div class="loading-spinner"></div>
-            <p class="text-gray-400 mt-2">در حال بارگذاری آگهی‌ها...</p>
+    <main class="flex-1 container mx-auto px-4 pt-24 pb-20">
+        <!-- پیام‌های سیستم -->
+        <div id="system-messages" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4">
+            <!-- پیام‌ها اینجا نمایش داده می‌شوند -->
         </div>
-        <div id="ads-list" class="bg-gray-800 rounded-lg overflow-hidden">
-            <!-- آگهی‌ها اینجا نمایش داده می‌شوند -->
-            <div class="ad-card p-4 hover:bg-gray-700 transition cursor-pointer">
-                <div class="flex gap-4">
-                    <img src="https://via.placeholder.com/100" alt="آگهی" class="ad-image">
-                    <div class="flex-1">
-                        <h3 class="ad-title font-bold">پژو 206 تیپ 2 مدل 1395</h3>
-                        <p class="ad-price mt-1">120,000,000 تومان</p>
-                        <div class="flex justify-between items-center mt-2">
-                            <span class="ad-location">تهران، تجریش</span>
-                            <span class="ad-time">2 ساعت پیش</span>
-                        </div>
-                    </div>
-                </div>
+        
+        <!-- اسپینر لودینگ -->
+        <div id="ads-loading" class="hidden fixed inset-0 flex items-center justify-center z-40 bg-black bg-opacity-50">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center">
+                <div class="loading-spinner"></div>
+                <p class="text-gray-300 mt-3">در حال بارگذاری آگهی‌ها...</p>
             </div>
-            <div class="ad-card p-4 hover:bg-gray-700 transition cursor-pointer">
-                <div class="flex gap-4">
-                    <img src="https://via.placeholder.com/100" alt="آگهی" class="ad-image">
-                    <div class="flex-1">
-                        <h3 class="ad-title font-bold">آپارتمان 80 متری در نیاوران</h3>
-                        <p class="ad-price mt-1">3,500,000,000 تومان</p>
-                        <div class="flex justify-between items-center mt-2">
-                            <span class="ad-location">تهران، نیاوران</span>
-                            <span class="ad-time">1 روز پیش</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="ad-card p-4 hover:bg-gray-700 transition cursor-pointer">
-                <div class="flex gap-4">
-                    <img src="https://via.placeholder.com/100" alt="آگهی" class="ad-image">
-                    <div class="flex-1">
-                        <h3 class="ad-title font-bold">لپ تاپ ایسوس مدل VivoBook</h3>
-                        <p class="ad-price mt-1">15,000,000 تومان</p>
-                        <div class="flex justify-between items-center mt-2">
-                            <span class="ad-location">اصفهان</span>
-                            <span class="ad-time">3 ساعت پیش</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+        
+        <!-- لیست آگهی‌ها -->
+        <div id="ads-list" class="grid grid-cols-1 gap-4">
+            <!-- آگهی‌ها توسط اسکریپت پر می‌شوند -->
         </div>
     </main>
 
     <!-- فوتر -->
-    <footer class="fixed bottom-0 left-0 right-0 bg-gray-900 shadow-xl z-20 border-t border-gray-700">
-        <div class="container mx-auto flex justify-around items-center">
-            <a href="index.html" class="footer-tab active text-white">
-                <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                <span>آگهی‌ها</span>
+    <footer class="bg-gray-900 border-t border-gray-700 py-3 fixed bottom-0 left-0 right-0 z-20">
+        <div class="container mx-auto flex justify-around">
+            <a href="index.html" class="flex flex-col items-center text-white">
+                <i class="fas fa-home text-lg"></i>
+                <span class="text-xs mt-1">آگهی‌ها</span>
             </a>
-            <a href="submit-ad.html" class="footer-tab text-gray-400 hover:text-white">
-                <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                <span>ثبت آگهی</span>
+            <a href="submit-ad.html" class="flex flex-col items-center text-gray-400 hover:text-white">
+                <i class="fas fa-plus text-lg"></i>
+                <span class="text-xs mt-1">ثبت آگهی</span>
             </a>
-            <a href="about.html" class="footer-tab text-gray-400 hover:text-white">
-                <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>درباره ما</span>
+            <a href="about.html" class="flex flex-col items-center text-gray-400 hover:text-white">
+                <i class="fas fa-info-circle text-lg"></i>
+                <span class="text-xs mt-1">درباره ما</span>
             </a>
         </div>
     </footer>
 
     <script src="script.js"></script>
-    <script>
-        // اسکریپت برای مدیریت منوی موبایل و جستجو
-        $(document).ready(function() {
-            // مدیریت منوی موبایل
-            $('#hamburger-btn').click(function() {
-                $('#mobile-menu').addClass('show');
-                $('#mobile-menu-overlay').addClass('show');
-            });
-            
-            $('#close-mobile-menu, #mobile-menu-overlay').click(function() {
-                $('#mobile-menu').removeClass('show');
-                $('#mobile-menu-overlay').removeClass('show');
-            });
-            
-            // مدیریت جستجوی موبایل
-            $('#mobile-search-btn').click(function() {
-                $('#mobile-search-container').toggleClass('show');
-                $('#mobile-search-input').focus();
-            });
-            
-            // تابع جستجوی مشترک برای موبایل و دسکتاپ
-            function performSearch(searchTerm) {
-                searchTerm = searchTerm.toLowerCase().trim();
-                
-                if (searchTerm === '') {
-                    $('.ad-card').removeClass('hidden');
-                    return;
-                }
-                
-                $('.ad-card').each(function() {
-                    const cardText = $(this).text().toLowerCase();
-                    if (cardText.includes(searchTerm)) {
-                        $(this).removeClass('hidden');
-                    } else {
-                        $(this).addClass('hidden');
-                    }
-                });
-            }
-            
-            // جستجوی دسکتاپ
-            $('#search-btn').click(function() {
-                const searchTerm = $('#search-input').val();
-                performSearch(searchTerm);
-            });
-            
-            $('#search-input').keypress(function(e) {
-                if (e.which === 13) { // Enter key
-                    const searchTerm = $('#search-input').val();
-                    performSearch(searchTerm);
-                }
-            });
-            
-            // جستجوی موبایل
-            $(document).ready(function () {
-                // باز کردن فرم جستجو
-                $('#mobile-search-btn').on('click', function () {
-                    $('#mobile-search-container').toggleClass('hidden');
-                    $('#mobile-search-input').focus();
-                });
-
-                // ارسال جستجو
-                $(document).on('click', '#mobile-search-submit', function () {
-                    const searchTerm = $('#mobile-search-input').val().trim();
-
-                    if (searchTerm === '') {
-                        console.warn('عبارت جستجو خالی است.');
-                        return;
-                    }
-
-                    console.log('در حال جستجو برای:', searchTerm);
-                    performSearch(searchTerm);
-
-                    // بستن فرم جستجو
-                    $('#mobile-search-container').addClass('hidden');
-                });
-            });
-
-            
-            $('#mobile-search-input').keypress(function(e) {
-                if (e.which === 13) { // Enter key
-                    const searchTerm = $('#mobile-search-input').val();
-                    performSearch(searchTerm);
-                    $('#mobile-search-container').removeClass('show');
-                }
-            });
-            
-            // بستن جستجوی موبایل هنگام اسکرول
-            $(window).scroll(function() {
-                if ($(window).scrollTop() > 10) {
-                    $('#mobile-search-container').removeClass('show');
-                }
-            });
-            
-            // نمونه آگهی‌ها برای نمایش عملکرد جستجو
-            // در حالت واقعی این آگهی‌ها از سرور دریافت می‌شوند
-        });
-    </script>
 </body>
 </html>

@@ -1,45 +1,159 @@
 @charset "UTF-8";
+
+/* Reset و تنظیمات پایه */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: 'Vazir', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    margin: 0;
+    line-height: 1.6;
+    overflow-x: hidden;
 }
+
+/* انیمیشن‌ها */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* کامپوننت‌های مشترک */
+.loading-spinner {
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top: 3px solid #a78bfa;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+.category-btn {
+    transition: all 0.2s ease;
+    border: none;
+}
+
 .category-btn:hover, .category-btn.active {
     transform: scale(1.05);
-    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
+
+/* کارت آگهی */
 .ad-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     background-color: #1f2937;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid #374151;
 }
+
 .ad-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4);
+    border-color: #6b46c1;
 }
-table tr:hover {
-    background-color: rgba(139, 92, 246, 0.3);
+
+.ad-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 0.5rem;
 }
-.container {
-    max-width: 1200px;
+
+.ad-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-input, button, select, textarea {
-    outline: none;
+
+.ad-price {
+    color: #f59e0b;
+    font-weight: bold;
 }
-input, select, textarea {
-    border: 1px solid #4b5563;
+
+.ad-location, .ad-time {
+    font-size: 0.75rem;
+    color: #9ca3af;
 }
-button {
-    cursor: pointer;
+
+/* منوی موبایل */
+#mobile-menu {
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
 }
-main {
-    overflow-y: auto;
+
+#mobile-menu-overlay.show {
+    display: block;
+    animation: fadeIn 0.3s ease;
 }
-#categories-menu {
-    transition: all 0.3s ease;
+
+#mobile-menu.show {
+    right: 0;
 }
-footer a {
-    transition: all 0.2s ease;
+
+/* پیام‌های سیستم */
+.system-message {
+    animation: fadeIn 0.3s ease;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-footer a:hover {
-    transform: translateY(-2px);
+
+.system-message.error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border-left: 4px solid #dc2626;
+}
+
+.system-message.success {
+    background-color: #dcfce7;
+    color: #166534;
+    border-left: 4px solid #16a34a;
+}
+
+.system-message.warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    border-left: 4px solid #f59e0b;
+}
+
+.system-message.info {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-left: 4px solid #3b82f6;
+}
+
+/* حالت‌های مختلف */
+.hidden {
+    display: none !important;
+}
+
+/* ریسپانسیو */
+@media (max-width: 768px) {
+    .ad-card {
+        flex-direction: column;
+    }
+    
+    .ad-image {
+        width: 100%;
+        height: 150px;
+    }
+}
+
+@media (min-width: 1024px) {
+    #ads-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 

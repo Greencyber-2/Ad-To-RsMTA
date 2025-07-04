@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <style>
@@ -112,6 +113,86 @@
             );
             border-left: 4px solid #a855f7;
         }
+        /* Checkbox styles */
+        .custom-checkbox {
+            position: relative;
+            width: 18px;
+            height: 18px;
+        }
+        .custom-checkbox input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        .checkmark {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 18px;
+            width: 18px;
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            border-radius: 4px;
+        }
+        .custom-checkbox input:checked ~ .checkmark {
+            background-color: #a855f7;
+            border-color: #a855f7;
+        }
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        .custom-checkbox input:checked ~ .checkmark:after {
+            display: block;
+        }
+        .custom-checkbox .checkmark:after {
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        /* Bulk actions dropdown */
+        .bulk-actions-dropdown {
+            display: none;
+        }
+        .bulk-actions-active .bulk-actions-dropdown {
+            display: flex;
+        }
+        /* Status badges */
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        .status-normal {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .status-fast {
+            background-color: #10b981;
+            color: white;
+        }
+        .status-vip {
+            background-color: #a855f7;
+            color: white;
+        }
+        /* Ping status */
+        .ping-success {
+            color: #10b981;
+        }
+        .ping-warning {
+            color: #f59e0b;
+        }
+        .ping-error {
+            color: #ef4444;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
@@ -121,9 +202,13 @@
             <div class="text-center mb-6">
                 <img src="rsmta.png" alt="Logo" class="h-16 w-16 mx-auto mb-3 rounded-full border-2 border-purple-500">
                 <h2 class="text-xl font-bold text-purple-500">ورود به پنل مدیریت</h2>
-                <p class="text-gray-400 text-sm mt-1">لطفاً برای ادامه رمز عبور خود را وارد کنید</p>
+                <p class="text-gray-400 text-sm mt-1">لطفاً برای ادامه نام کاربری و رمز عبور خود را وارد کنید</p>
             </div>
             <div class="space-y-4">
+                <div>
+                    <label for="admin-username" class="block text-gray-400 mb-1">نام کاربری</label>
+                    <input type="text" id="admin-username" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="نام کاربری">
+                </div>
                 <div>
                     <label for="admin-password" class="block text-gray-400 mb-1">رمز عبور</label>
                     <div class="relative">
@@ -215,76 +300,136 @@
         <main class="main-content content-expanded min-h-screen">
             <!-- Dashboard Content (Hidden Initially) -->
             <section id="dashboard-section" class="hidden pt-4 pb-24 px-4">
-                <div class="dev-notice p-4 rounded-lg mb-6">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0 pt-1">
-                            <i class="fas fa-tools text-purple-500 text-xl"></i>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="lg:col-span-2 bg-gray-800 rounded-lg shadow-md border border-gray-700 p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-bold text-purple-500">وضعیت سرور و اتصالات</h2>
+                            <button id="refresh-status-btn" class="text-gray-400 hover:text-purple-500">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                         </div>
-                        <div class="mr-3">
-                            <h3 class="text-lg font-bold text-purple-400">این بخش در حال توسعه است</h3>
-                            <p class="text-gray-300 mt-1">داشبورد مدیریت به زودی با آمار و گزارشات پیشرفته در دسترس خواهد بود.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-gray-700 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="font-medium">وضعیت کلودفلر</h3>
+                                    <span id="cloudflare-status" class="text-sm font-medium">در حال بررسی...</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-400 text-sm">پینگ:</span>
+                                    <span id="cloudflare-ping" class="text-sm">-- ms</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="font-medium">وضعیت دیتابیس</h3>
+                                    <span id="database-status" class="text-sm font-medium">در حال بررسی...</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-400 text-sm">پینگ:</span>
+                                    <span id="database-ping" class="text-sm">-- ms</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="font-medium">تعداد آگهی‌ها</h3>
+                                    <span id="total-ads-count" class="text-sm font-medium">0</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-400 text-sm">امروز:</span>
+                                    <span id="today-ads-count" class="text-sm">0</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="font-medium">وضعیت آگهی‌ها</h3>
+                                    <span id="published-ratio" class="text-sm font-medium">0%</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-400 text-sm">منتشر شده:</span>
+                                    <span id="published-ads-count" class="text-sm">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-lg shadow-md border border-gray-700 p-6">
+                        <h2 class="text-lg font-bold text-purple-500 mb-4">آمار سریع</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-gray-400">آگهی‌های VIP</span>
+                                    <span id="vip-ads-count" class="font-medium">0</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-2">
+                                    <div id="vip-ads-bar" class="bg-purple-500 h-2 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-gray-400">آگهی‌های Fast</span>
+                                    <span id="fast-ads-count" class="font-medium">0</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-2">
+                                    <div id="fast-ads-bar" class="bg-green-500 h-2 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-gray-400">آگهی‌های معمولی</span>
+                                    <span id="normal-ads-count" class="font-medium">0</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-2">
+                                    <div id="normal-ads-bar" class="bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div class="stat-card bg-gray-800 rounded-lg p-4 shadow-md border-r-4 border-purple-500">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-gray-400">آگهی‌های فعال</p>
-                                <h3 class="text-2xl font-bold" id="active-ads-count">0</h3>
-                            </div>
-                            <div class="bg-purple-500 bg-opacity-20 p-3 rounded-full">
-                                <i class="fas fa-ad text-purple-500"></i>
-                            </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-gray-800 rounded-lg shadow-md border border-gray-700 p-6">
+                        <h2 class="text-lg font-bold text-purple-500 mb-4">توزیع آگهی‌ها بر اساس دسته‌بندی</h2>
+                        <div class="h-64">
+                            <canvas id="categoryChart"></canvas>
                         </div>
-                        <p class="text-sm text-gray-400 mt-2">در حال بارگذاری...</p>
                     </div>
-                    <div class="stat-card bg-gray-800 rounded-lg p-4 shadow-md border-r-4 border-blue-500">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-gray-400">کاربران ثبت‌نامی</p>
-                                <h3 class="text-2xl font-bold" id="users-count">0</h3>
-                            </div>
-                            <div class="bg-blue-500 bg-opacity-20 p-3 rounded-full">
-                                <i class="fas fa-users text-blue-500"></i>
-                            </div>
+                    <div class="bg-gray-800 rounded-lg shadow-md border border-gray-700 p-6">
+                        <h2 class="text-lg font-bold text-purple-500 mb-4">وضعیت آگهی‌ها در 7 روز گذشته</h2>
+                        <div class="h-64">
+                            <canvas id="dailyAdsChart"></canvas>
                         </div>
-                        <p class="text-sm text-gray-400 mt-2">در حال بارگذاری...</p>
                     </div>
-                    <div class="stat-card bg-gray-800 rounded-lg p-4 shadow-md border-r-4 border-green-500">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-gray-400">آگهی‌های امروز</p>
-                                <h3 class="text-2xl font-bold" id="today-ads-count">0</h3>
-                            </div>
-                            <div class="bg-green-500 bg-opacity-20 p-3 rounded-full">
-                                <i class="fas fa-calendar-day text-green-500"></i>
-                            </div>
-                        </div>
-                        <p class="text-sm text-gray-400 mt-2">در حال بارگذاری...</p>
-                    </div>
-                    <div class="stat-card bg-gray-800 rounded-lg p-4 shadow-md border-r-4 border-yellow-500">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-gray-400">درآمد ماهانه</p>
-                                <h3 class="text-2xl font-bold" id="monthly-income">$0</h3>
-                            </div>
-                            <div class="bg-yellow-500 bg-opacity-20 p-3 rounded-full">
-                                <i class="fas fa-dollar-sign text-yellow-500"></i>
-                            </div>
-                        </div>
-                        <p class="text-sm text-gray-400 mt-2">در حال بارگذاری...</p>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg shadow-md border border-gray-700 p-6">
+                    <h2 class="text-lg font-bold text-purple-500 mb-4">آخرین آگهی‌ها</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-right">
+                            <thead>
+                                <tr class="bg-gray-700">
+                                    <th class="p-3">عنوان</th>
+                                    <th class="p-3">قیمت</th>
+                                    <th class="p-3">دسته‌بندی</th>
+                                    <th class="p-3">وضعیت</th>
+                                    <th class="p-3">تاریخ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-ads-list">
+                                <tr>
+                                    <td colspan="5" class="p-4 text-center text-gray-400">در حال بارگذاری...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
 
             <!-- Ads Management Section (Default Visible) -->
             <section id="ads-management-section" class="pt-4 pb-24 px-4">
-                <div class="bg-gray-800 rounded-lg shadow-md border border-gray-700">
-                    <div class="p-4 border-b border-gray-700">
-                        <h2 class="text-lg font-bold text-purple-500 mb-4">لیست آگهی‌ها</h2>
-                        <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                <div class="bg-gray-800 rounded-lg shadow-md mb-6 border border-gray-700">
+                    <div class="p-4 border-b border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                        <h2 class="text-lg font-bold text-purple-500">لیست آگهی‌ها</h2>
+                        <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                             <div class="flex-1 relative">
                                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                                 <input type="text" id="admin-search" class="w-full p-2 pl-10 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="جستجوی آگهی‌ها...">
@@ -301,37 +446,88 @@
                                 <option value="all">همه وضعیت‌ها</option>
                                 <option value="published">منتشر شده</option>
                                 <option value="pending">در انتظار تأیید</option>
-                                <option value="rejected">رد شده</option>
                             </select>
+                            <select id="admin-type-filter" class="p-2 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent flex-1">
+                                <option value="all">همه انواع</option>
+                                <option value="normal">معمولی</option>
+                                <option value="fast">Fast</option>
+                                <option value="vip">VIP</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="select-all-ads">
+                                <span class="checkmark"></span>
+                            </label>
+                            <span class="text-sm text-gray-400">انتخاب همه</span>
+                        </div>
+                        <div class="relative bulk-actions-dropdown">
+                            <button id="bulk-actions-btn" class="bg-gray-700 text-gray-300 px-3 py-1 rounded-lg hover:bg-gray-600 flex items-center gap-1">
+                                <span>عملیات گروهی</span>
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </button>
+                            <div class="absolute top-full right-0 mt-1 w-48 bg-gray-700 rounded-lg shadow-lg z-10 hidden" id="bulk-actions-menu">
+                                <button class="w-full text-right px-4 py-2 hover:bg-gray-600 text-sm flex items-center gap-2 bulk-action-btn" data-action="publish">
+                                    <i class="fas fa-eye ml-2"></i>
+                                    انتشار انتخاب شده‌ها
+                                </button>
+                                <button class="w-full text-right px-4 py-2 hover:bg-gray-600 text-sm flex items-center gap-2 bulk-action-btn" data-action="unpublish">
+                                    <i class="fas fa-eye-slash ml-2"></i>
+                                    عدم انتشار انتخاب شده‌ها
+                                </button>
+                                <button class="w-full text-right px-4 py-2 hover:bg-gray-600 text-sm flex items-center gap-2 bulk-action-btn" data-action="vip">
+                                    <i class="fas fa-crown ml-2"></i>
+                                    ارتقا به VIP
+                                </button>
+                                <button class="w-full text-right px-4 py-2 hover:bg-gray-600 text-sm flex items-center gap-2 bulk-action-btn" data-action="fast">
+                                    <i class="fas fa-bolt ml-2"></i>
+                                    ارتقا به Fast
+                                </button>
+                                <button class="w-full text-right px-4 py-2 hover:bg-gray-600 text-red-400 text-sm flex items-center gap-2 bulk-action-btn" data-action="delete">
+                                    <i class="fas fa-trash ml-2"></i>
+                                    حذف انتخاب شده‌ها
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-right">
                             <thead>
                                 <tr class="bg-gray-700">
+                                    <th class="p-3 w-10"></th>
                                     <th class="p-3">تصویر</th>
                                     <th class="p-3">عنوان</th>
                                     <th class="p-3">قیمت</th>
                                     <th class="p-3">دسته‌بندی</th>
                                     <th class="p-3">وضعیت</th>
+                                    <th class="p-3">نوع</th>
                                     <th class="p-3">تاریخ</th>
                                     <th class="p-3">عملیات</th>
                                 </tr>
                             </thead>
                             <tbody id="admin-ads-list" class="divide-y divide-gray-700">
-                                <!-- Ads will be loaded here -->
+                                <tr>
+                                    <td colspan="9" class="p-4 text-center">
+                                        <div class="flex flex-col items-center justify-center gap-2">
+                                            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+                                            <span>در حال بارگذاری آگهی‌ها...</span>
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div class="p-4 border-t border-gray-700 flex justify-between items-center">
+                    <div class="p-4 border-t border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-4">
                         <div class="text-sm text-gray-400">
                             نمایش <span id="showing-from">1</span> تا <span id="showing-to">10</span> از <span id="total-ads">0</span> آگهی
                         </div>
-                        <div class="flex space-x-1">
+                        <div class="flex items-center gap-2">
                             <button id="prev-page" class="px-3 py-1 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                                 <i class="fas fa-chevron-right"></i>
                             </button>
-                            <div class="flex space-x-1" id="pagination-numbers">
+                            <div class="flex gap-1" id="pagination-numbers">
                                 <!-- Pagination numbers will be added here -->
                             </div>
                             <button id="next-page" class="px-3 py-1 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
@@ -370,6 +566,10 @@
                                 <input type="text" id="ad-player-name" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="نام پلیر">
                             </div>
                             <div>
+                                <label for="ad-telegram-id" class="block text-gray-400 mb-1">آیدی تلگرام</label>
+                                <input type="text" id="ad-telegram-id" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="آیدی تلگرام">
+                            </div>
+                            <div>
                                 <label for="ad-referral" class="block text-gray-400 mb-1">رفرال پلیر</label>
                                 <input type="text" id="ad-referral" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="رفرال پلیر">
                             </div>
@@ -392,6 +592,23 @@
                                 </select>
                             </div>
                             <div class="md:col-span-2">
+                                <label class="block text-gray-400 mb-1">نوع آگهی <span class="text-red-500">*</span></label>
+                                <div class="flex flex-wrap gap-4">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" name="ad-type" value="normal" class="form-radio text-blue-500" checked>
+                                        <span class="status-badge status-normal">معمولی</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" name="ad-type" value="fast" class="form-radio text-green-500">
+                                        <span class="status-badge status-fast">Fast</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" name="ad-type" value="vip" class="form-radio text-purple-500">
+                                        <span class="status-badge status-vip">VIP</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
                                 <label for="ad-description" class="block text-gray-400 mb-1">توضیحات <span class="text-red-500">*</span></label>
                                 <textarea id="ad-description" rows="4" class="w-full p-3 rounded-lg border border-gray-600 bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="توضیحات کامل آگهی"></textarea>
                             </div>
@@ -409,7 +626,7 @@
                             </div>
                         </div>
                         <div class="mt-6 flex justify-end gap-3">
-                            <button id="reset-form-btn" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">پاک کردن فرم</button>
+                            <button id="reset-form-btn" type="button" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">پاک کردن فرم</button>
                             <button id="add-ad-btn" class="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-2 rounded-lg hover:from-purple-600 hover:to-blue-600 transition font-semibold flex items-center">
                                 <i class="fas fa-plus ml-2"></i>
                                 افزودن آگهی
@@ -423,75 +640,6 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <script>
-        $(document).ready(() => {
-            // Navigation between sections
-            $('#dashboard-link').click(function(e) {
-                e.preventDefault();
-                $('.nav-item').removeClass('active bg-gray-700 text-purple-400');
-                $(this).addClass('active bg-gray-700 text-purple-400');
-                $('#dashboard-section').removeClass('hidden');
-                $('#ads-management-section, #add-new-ad-section').addClass('hidden');
-            });
-
-            $('#ads-management-link').click(function(e) {
-                e.preventDefault();
-                $('.nav-item').removeClass('active bg-gray-700 text-purple-400');
-                $(this).addClass('active bg-gray-700 text-purple-400');
-                $('#ads-management-section').removeClass('hidden');
-                $('#dashboard-section, #add-new-ad-section').addClass('hidden');
-                loadAdminAds();
-            });
-
-            $('#add-new-ad-link').click(function(e) {
-                e.preventDefault();
-                $('.nav-item').removeClass('active bg-gray-700 text-purple-400');
-                $(this).addClass('active bg-gray-700 text-purple-400');
-                $('#add-new-ad-section').removeClass('hidden');
-                $('#dashboard-section, #ads-management-section').addClass('hidden');
-            });
-
-            $('#close-add-ad-form').click(function() {
-                $('#add-new-ad-link').removeClass('active bg-gray-700 text-purple-400');
-                $('#ads-management-link').addClass('active bg-gray-700 text-purple-400');
-                $('#ads-management-section').removeClass('hidden');
-                $('#add-new-ad-section').addClass('hidden');
-            });
-
-            // Toggle sidebar on mobile
-            $('#mobile-menu-btn').click(function() {
-                $('.sidebar').toggleClass('sidebar-open');
-            });
-
-            $('#sidebar-toggle').click(function() {
-                $('.sidebar').toggleClass('sidebar-open');
-            });
-
-            // Drop zone functionality
-            $('#drop-zone').click(function() {
-                $('#ad-images').click();
-            });
-
-            $('#drop-zone').on('dragover', function(e) {
-                e.preventDefault();
-                $(this).addClass('border-purple-500 bg-gray-700');
-            });
-
-            $('#drop-zone').on('dragleave', function(e) {
-                e.preventDefault();
-                $(this).removeClass('border-purple-500 bg-gray-700');
-            });
-
-            $('#drop-zone').on('drop', function(e) {
-                e.preventDefault();
-                $(this).removeClass('border-purple-500 bg-gray-700');
-                if (e.originalEvent.dataTransfer.files.length) {
-                    $('#ad-images')[0].files = e.originalEvent.dataTransfer.files;
-                    $('#ad-images').trigger('change');
-                }
-            });
-        });
-    </script>
     <script src="admin.js"></script>
 </body>
 </html>
