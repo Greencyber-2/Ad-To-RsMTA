@@ -19,30 +19,6 @@ export default {
       const path = url.pathname;
       const method = request.method;
 
-      // ایجاد جدول اگر وجود ندارد (با مدیریت خطا)
-      try {
-        await env.DB.prepare(`
-          CREATE TABLE IF NOT EXISTS ads (
-            id INTEGER PRIMARY KEY,
-            title TEXT NOT NULL,
-            price TEXT NOT NULL,
-            description TEXT NOT NULL,
-            category TEXT NOT NULL,
-            images TEXT NOT NULL,
-            published INTEGER DEFAULT 0,
-            createdAt TEXT NOT NULL,
-            gameId TEXT,
-            playerName TEXT,
-            referral TEXT,
-            location TEXT,
-            details TEXT
-          )
-        `).run();
-      } catch (dbError) {
-        console.error('Database creation error:', dbError);
-        throw new Error('Database initialization failed');
-      }
-
       // مسیرهای API
       if (path === '/api/ads' || path === '/api/ads/') {
         switch (method) {
@@ -94,7 +70,8 @@ async function handleGetAds(env, corsHeaders) {
     
     const adsWithParsedImages = results.map(ad => ({
       ...ad,
-      images: safeJsonParse(ad.images)
+      images: safeJsonParse(ad.images),
+      published: ad.published === 1
     }));
     
     return successResponse(adsWithParsedImages, corsHeaders);
@@ -113,7 +90,7 @@ async function handlePostAd(request, env, corsHeaders) {
   }
 
   // اعتبارسنجی
-  const requiredFields = ['title', 'price', 'description', 'category'];
+  const requiredFields = ['title', 'price', 'description', 'category', 'telegramId'];
   const missingFields = requiredFields.filter(field => !data[field]);
   
   if (missingFields.length > 0) {
@@ -138,14 +115,32 @@ async function handlePostAd(request, env, corsHeaders) {
     playerName: data.playerName || null,
     referral: data.referral || null,
     location: data.location || null,
-    details: data.details || data.description
+    details: data.details || data.description,
+    telegramId: data.telegramId || null,
+    type: data.type || 'normal'
   };
 
   try {
     const { success } = await env.DB.prepare(
-      "INSERT INTO ads (id, title, price, description, category, images, published, createdAt, gameId, playerName, referral, location, details) " +
-      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-    ).bind(...Object.values(adData)).run();
+      "INSERT INTO ads (id, title, price, description, category, images, published, createdAt, gameId, playerName, referral, location, details, telegramId, type) " +
+      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    ).bind(
+      adData.id,
+      adData.title,
+      adData.price,
+      adData.description,
+      adData.category,
+      adData.images,
+      adData.published,
+      adData.createdAt,
+      adData.gameId,
+      adData.playerName,
+      adData.referral,
+      adData.location,
+      adData.details,
+      adData.telegramId,
+      adData.type
+    ).run();
 
     if (!success) {
       throw new Error('Database operation failed');
@@ -170,7 +165,8 @@ async function handleGetAd(id, env, corsHeaders) {
 
     return successResponse({
       ...ad,
-      images: safeJsonParse(ad.images)
+      images: safeJsonParse(ad.images),
+      published: ad.published === 1
     }, corsHeaders);
   } catch (error) {
     console.error('Failed to fetch ad:', error);
@@ -187,7 +183,7 @@ async function handleUpdateAd(id, request, env, corsHeaders) {
   }
 
   // اعتبارسنجی
-  const requiredFields = ['title', 'price', 'description', 'category'];
+  const requiredFields = ['title', 'price', 'description', 'category', 'telegramId'];
   const missingFields = requiredFields.filter(field => !data[field]);
   
   if (missingFields.length > 0) {
@@ -197,7 +193,7 @@ async function handleUpdateAd(id, request, env, corsHeaders) {
   try {
     const { success } = await env.DB.prepare(
       "UPDATE ads SET title = ?, price = ?, description = ?, category = ?, images = ?, published = ?, " +
-      "gameId = ?, playerName = ?, referral = ?, location = ?, details = ? WHERE id = ?"
+      "gameId = ?, playerName = ?, referral = ?, location = ?, details = ?, telegramId = ?, type = ? WHERE id = ?"
     ).bind(
       data.title,
       data.price,
@@ -210,6 +206,8 @@ async function handleUpdateAd(id, request, env, corsHeaders) {
       data.referral || null,
       data.location || null,
       data.details || data.description,
+      data.telegramId || null,
+      data.type || 'normal',
       id
     ).run();
 

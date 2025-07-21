@@ -38,13 +38,21 @@ $(document).ready(() => {
     }
 
     /**
-     * بررسی جدید بودن آگهی
+     * بررسی نوع آگهی
      */
-    function isAdNew(timestamp) {
-        if (!timestamp) return false;
-        const adDate = new Date(timestamp);
-        const now = new Date();
-        return (now - adDate) < 24 * 60 * 60 * 1000;
+    function getAdBadge(type) {
+        const badges = {
+            'fast': {
+                text: 'فوری',
+                class: 'bg-orange-500 animate-pulse'
+            },
+            'vip': {
+                text: 'ویژه',
+                class: 'bg-purple-500 animate-pulse' // تغییر: ویژه هم چشمک می‌زند
+            },
+            'normal': null
+        };
+        return badges[type] || null;
     }
 
     /**
@@ -234,12 +242,18 @@ $(document).ready(() => {
     function displayAds(ads) {
         $('#ads-list').empty();
         
-        const adsHtml = ads.map(ad => {
+        // جدا کردن آگهی‌های فوری و نمایش آنها در ابتدا
+        const fastAds = ads.filter(ad => ad.type === 'fast');
+        const otherAds = ads.filter(ad => ad.type !== 'fast');
+        const sortedAds = [...fastAds, ...otherAds];
+        
+        const adsHtml = sortedAds.map(ad => {
             const images = processImages(ad.images);
             const mainImage = images[0];
-            const timeAgo = formatTime(ad.createdAt);
-            const categoryName = getCategoryName(ad.category);
-            const isNew = isAdNew(ad.createdAt);
+            const timeAgo = ad.type === 'fast' ? '' : formatTime(ad.createdAt); // تغییر: برای آگهی فوری زمان نمایش داده نمی‌شود
+            const categoryName = ad.type === 'fast' ? '' : getCategoryName(ad.category); // تغییر: برای آگهی فوری دسته‌بندی نمایش داده نمی‌شود
+            const badge = getAdBadge(ad.type);
+            const priceHtml = formatPrice(ad.price);
             
             return `
             <div class="group relative">
@@ -250,12 +264,14 @@ $(document).ready(() => {
                              loading="lazy"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                              onerror="this.src='${ERROR_IMAGE}'">
+                        ${categoryName ? `
                         <div class="absolute top-2 left-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
                             ${categoryName}
                         </div>
-                        ${isNew ? `
-                        <div class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded animate-pulse">
-                            جدید
+                        ` : ''}
+                        ${badge ? `
+                        <div class="absolute top-2 right-2 ${badge.class} text-white text-xs px-2 py-1 rounded">
+                            ${badge.text}
                         </div>
                         ` : ''}
                     </div>
@@ -267,9 +283,11 @@ $(document).ready(() => {
                         
                         <div class="mt-auto flex justify-between items-center pt-2">
                             <span class="text-green-500 font-bold text-sm whitespace-nowrap">
-                                ${formatPrice(ad.price)}
+                                ${priceHtml}
                             </span>
+                            ${timeAgo ? `
                             <span class="text-gray-400 text-xs">${timeAgo}</span>
+                            ` : ''}
                         </div>
                     </div>
                     
@@ -355,15 +373,16 @@ $(document).ready(() => {
     }
 
     /**
-     * نمایش جزئیات آگهی (بدون تغییر در استایل‌های CSS موجود)
+     * نمایش جزئیات آگهی
      */
     function renderAdDetail(ad) {
         const images = processImages(ad.images);
         const timeAgo = formatTime(ad.createdAt);
-        const isNew = isAdNew(ad.createdAt);
+        const badge = getAdBadge(ad.type);
         
         $('#ad-detail').html(`
             <div class="flex flex-col gap-6">
+                <!-- تصاویر آگهی -->
                 <div class="relative rounded-xl overflow-hidden shadow-lg">
                     <div class="swiper-container">
                         <div class="swiper-wrapper">
@@ -372,7 +391,7 @@ $(document).ready(() => {
                                     <img src="${img}" 
                                          alt="${ad.title || 'آگهی'}" 
                                          loading="lazy"
-                                         class="w-full h-64 sm:h-96 object-cover"
+                                         class="w-full h-64 sm:h-96 object-cover cursor-zoom-in"
                                          onerror="this.src='${ERROR_IMAGE}'">
                                 </div>
                             `).join('')}
@@ -382,9 +401,9 @@ $(document).ready(() => {
                         <div class="swiper-button-prev"></div>
                     </div>
                     <div class="absolute top-0 left-0 right-0 flex justify-between p-4">
-                        ${isNew ? `
-                        <div class="bg-red-500 text-white text-xs px-3 py-1 rounded-full animate-pulse">
-                            جدید
+                        ${badge ? `
+                        <div class="${badge.class} text-white text-sm px-3 py-1 rounded-full">
+                            ${badge.text}
                         </div>
                         ` : '<div></div>'}
                         <div class="price-badge inline-flex items-center px-4 py-2 rounded-full bg-black bg-opacity-70">
@@ -393,6 +412,7 @@ $(document).ready(() => {
                     </div>
                 </div>
                 
+                <!-- اطلاعات آگهی -->
                 <div class="flex flex-col gap-4">
                     <div>
                         <h2 class="text-2xl sm:text-3xl font-bold text-white mb-1">${ad.title || 'بدون عنوان'}</h2>
@@ -405,6 +425,7 @@ $(document).ready(() => {
                         </div>
                     </div>
                     
+                    <!-- اطلاعات فروشنده -->
                     <div class="info-box p-4 bg-gray-800 rounded-lg">
                         <h3 class="text-white font-bold mb-3 text-lg border-b border-gray-700 pb-2">اطلاعات فروشنده</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -437,18 +458,21 @@ $(document).ready(() => {
                                     <p class="text-white">${ad.gameId || 'نامشخص'}</p>
                                 </div>
                             </div>
+                            ${ad.telegramId ? `
                             <div class="flex items-center gap-3">
                                 <div class="bg-gray-700 p-2 rounded-full">
-                                    <i class="fas fa-calendar-alt text-gray-400"></i>
+                                    <i class="fab fa-telegram text-gray-400"></i>
                                 </div>
                                 <div>
-                                    <p class="text-gray-400 text-xs">تاریخ ثبت</p>
-                                    <p class="text-white">${ad.createdAt ? new Date(ad.createdAt).toLocaleString('fa-IR') : 'نامشخص'}</p>
+                                    <p class="text-gray-400 text-xs">آیدی تلگرام</p>
+                                    <p class="text-white">${ad.telegramId}</p>
                                 </div>
                             </div>
+                            ` : ''}
                         </div>
                     </div>
                     
+                    <!-- توضیحات آگهی -->
                     <div class="info-box p-4 bg-gray-800 rounded-lg">
                         <h3 class="text-white font-bold mb-3 text-lg border-b border-gray-700 pb-2">توضیحات</h3>
                         <p class="text-gray-300 whitespace-pre-line leading-relaxed">${ad.description || 'بدون توضیحات'}</p>
@@ -460,19 +484,104 @@ $(document).ready(() => {
                         ` : ''}
                     </div>
                     
+                    <!-- دکمه تماس با فروشنده -->
                     <div class="sticky bottom-4 left-0 right-0 z-10">
-                        <div class="bg-gray-800 rounded-full shadow-xl p-2 max-w-md mx-auto">
-                            <button class="contact-btn bg-gradient-to-r from-green-500 to-green-600 text-white w-full px-6 py-3 rounded-full font-bold hover:from-green-600 hover:to-green-700 transition-all flex items-center justify-center">
-                                <i class="fas fa-phone-alt ml-2"></i>
-                                تماس با فروشنده
-                            </button>
+                        <button class="contact-btn bg-gradient-to-r from-green-500 to-green-600 text-white w-full px-6 py-3 rounded-lg font-bold hover:from-green-600 hover:to-green-700 transition-all flex items-center justify-center">
+                            <i class="fas fa-phone-alt ml-2"></i>
+                            تماس با فروشنده
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- مودال تصویر بزرگ -->
+                <div id="image-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-90 p-4">
+                    <div class="relative w-full max-w-4xl h-full max-h-screen">
+                        <button id="close-modal" class="absolute top-4 right-4 text-white text-2xl z-10 bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div class="swiper-modal-container h-full">
+                            <div class="swiper-wrapper">
+                                ${images.map(img => `
+                                    <div class="swiper-slide flex items-center justify-center">
+                                        <img src="${img}" 
+                                             alt="${ad.title || 'آگهی'}" 
+                                             class="max-w-full max-h-full object-contain">
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="swiper-pagination-modal"></div>
+                            <div class="swiper-button-next-modal"></div>
+                            <div class="swiper-button-prev-modal"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- مودال اطلاعات تماس -->
+                <div id="contact-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-80 p-4">
+                    <div class="bg-gray-800 rounded-lg max-w-md w-full p-6 relative">
+                        <button id="close-contact-modal" class="absolute top-4 left-4 text-gray-400 hover:text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <h3 class="text-xl font-bold text-white mb-4 text-center">اطلاعات تماس</h3>
+                        <div class="space-y-4">
+                            ${ad.playerName ? `
+                            <div class="flex items-center">
+                                <div class="bg-gray-700 p-2 rounded-full mr-3">
+                                    <i class="fas fa-user text-gray-400"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">نام فروشنده</p>
+                                    <p class="text-white">${ad.playerName}</p>
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            ${ad.gameId ? `
+                            <div class="flex items-center">
+                                <div class="bg-gray-700 p-2 rounded-full mr-3">
+                                    <i class="fas fa-gamepad text-gray-400"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">شماره گیم</p>
+                                    <p class="text-white">${ad.gameId}</p>
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            ${ad.telegramId ? `
+                            <div class="flex items-center">
+                                <div class="bg-gray-700 p-2 rounded-full mr-3">
+                                    <i class="fab fa-telegram text-gray-400"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">آیدی تلگرام</p>
+                                    <p class="text-white">${ad.telegramId}</p>
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            ${ad.referral ? `
+                            <div class="flex items-center">
+                                <div class="bg-gray-700 p-2 rounded-full mr-3">
+                                    <i class="fas fa-user-tag text-gray-400"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">رفرال</p>
+                                    <p class="text-white">${ad.referral}</p>
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            ${!ad.playerName && !ad.gameId && !ad.telegramId && !ad.referral ? `
+                            <p class="text-gray-400 text-center py-4">اطلاعات تماس موجود نیست</p>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
             </div>
         `);
         
-        // Initialize Swiper if multiple images exist
+        // Initialize Swiper for main images
         if (images.length > 1 && typeof Swiper === 'function') {
             new Swiper('.swiper-container', {
                 loop: true,
@@ -489,15 +598,80 @@ $(document).ready(() => {
             $('.swiper-pagination, .swiper-button-next, .swiper-button-prev').hide();
         }
         
+        // Initialize modal Swiper
+        if (typeof Swiper === 'function') {
+            new Swiper('.swiper-modal-container', {
+                loop: true,
+                pagination: {
+                    el: '.swiper-pagination-modal',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next-modal',
+                    prevEl: '.swiper-button-prev-modal',
+                },
+            });
+        }
+        
+        // Image click handler for zoom
+        $('.swiper-slide img').click(function() {
+            const index = $(this).closest('.swiper-slide').index();
+            $('#image-modal').removeClass('hidden').addClass('flex');
+            if (typeof Swiper === 'function') {
+                $('.swiper-modal-container')[0].swiper.slideToLoop(index);
+            }
+        });
+        
+        // Close modal handlers
+        $('#close-modal').click(() => {
+            $('#image-modal').addClass('hidden').removeClass('flex');
+        });
+        
+        $('#image-modal').click((e) => {
+            if ($(e.target).is('#image-modal')) {
+                $('#image-modal').addClass('hidden').removeClass('flex');
+            }
+        });
+        
         // Contact button click handler
         $('.contact-btn').click(() => {
-            const contactInfo = [
-                ad.playerName && `نام: ${ad.playerName}`,
-                ad.gameId && `شماره گیم: ${ad.gameId}`,
-                ad.referral && `رفرال: ${ad.referral}`
-            ].filter(Boolean).join('\n');
+            $('#contact-modal').removeClass('hidden').addClass('flex');
+        });
+        
+        $('#close-contact-modal').click(() => {
+            $('#contact-modal').addClass('hidden').removeClass('flex');
+        });
+        
+        $('#contact-modal').click((e) => {
+            if ($(e.target).is('#contact-modal')) {
+                $('#contact-modal').addClass('hidden').removeClass('flex');
+            }
+        });
+        
+        // Share button handler
+        $('#share-btn').click(() => {
+            $('#contact-modal').html(`
+                <div class="bg-gray-800 rounded-lg max-w-md w-full p-6 relative">
+                    <button id="close-contact-modal" class="absolute top-4 left-4 text-gray-400 hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <h3 class="text-xl font-bold text-white mb-4 text-center">در حال توسعه</h3>
+                    <p class="text-gray-300 text-center py-4">
+                        قابلیت اشتراک‌گذاری در حال توسعه می‌باشد. به زودی در دسترس خواهد بود.
+                    </p>
+                    <div class="flex justify-center mt-4">
+                        <button id="ok-btn" class="px-6 py-2 bg-green-600 rounded-lg text-white hover:bg-green-700">
+                            متوجه شدم
+                        </button>
+                    </div>
+                </div>
+            `);
             
-            alert(`اطلاعات تماس:\n${contactInfo || 'اطلاعات تماس موجود نیست'}`);
+            $('#close-contact-modal, #ok-btn').click(() => {
+                $('#contact-modal').addClass('hidden').removeClass('flex');
+            });
+            
+            $('#contact-modal').removeClass('hidden').addClass('flex');
         });
     }
 
@@ -552,20 +726,6 @@ $(document).ready(() => {
     // فیلتر قیمت
     $('#price-filter').change(() => {
         loadAds();
-    });
-
-    // اشتراک گذاری
-    $('#share-btn').click(() => {
-        if (navigator.share) {
-            navigator.share({
-                title: document.title,
-                url: window.location.href
-            }).catch(err => {
-                console.error('Error sharing:', err);
-            });
-        } else {
-            alert('امکان اشتراک‌گذاری در این مرورگر وجود ندارد. لینک را کپی کنید:\n' + window.location.href);
-        }
     });
 
     // ----------------------------
